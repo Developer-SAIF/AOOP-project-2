@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="studentVBox"
-      alignment="CENTER"
-      spacing="10.0"
-      xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.aoopproject.controllers.student.StudentController">
-    <padding>
-        <Insets bottom="20" left="20" right="20" top="20"/>
-    </padding>
-    <Button fx:id="notificationsButton" text="Notifications"/>
-    <Button fx:id="notesButton" text="Notes"/>
-    <Button fx:id="timerButton" text="Timer"/>
-    <Button fx:id="doubtsolvingButton" text="Doubt Solving"/>
-    <Button fx:id="logoutButton" text="Logout" onAction="#handleLogoutButtonAction" />
-</VBox>
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.example.aoopproject.controllers.student.StudentController">
+<left>
+    <VBox spacing="10.0" style="-fx-background-color: #11999E; -fx-padding: 10px;">
+        <children>
+            <FontAwesomeIconView glyphName="USER" size="34.0" />
+            <MFXButton text="Dashboard" />
+            <MFXButton text="Message" />
+            <MFXButton text="Documents" />
+            <MFXButton text="Q&amp;A" />
+            <MFXButton text="Setting" />
+            <MFXButton fx:id="logoutButton" onAction="#handleLogoutButtonAction" text="Log out" />
+        </children>
+    </VBox>
+</left>
+<center>
+    <BorderPane style="-fx-background-color: #FFFFFF;" />
+</center>
+</BorderPane>

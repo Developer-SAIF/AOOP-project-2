@@ -10,14 +10,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import com.example.aoopproject.views.ViewFactory;
-
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 public class LoginController {
-
 
     @FXML
     public AnchorPane mainPane;
@@ -27,6 +33,9 @@ public class LoginController {
 
     @FXML
     public MFXPasswordField passwordField;
+
+    @FXML
+    public Label quoteLabel;
 
     @FXML
     private TextField userIdField;
@@ -115,5 +124,32 @@ public class LoginController {
     @FXML
     public void initialize() {
         statusLabel.setVisible(false);
+        fetchRandomQuote();
+    }
+
+    private void fetchRandomQuote() {
+        try {
+            URL url = new URL("https://zenquotes.io/api/random");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+
+            JSONArray jsonArray = new JSONArray(content.toString());
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            String quote = jsonObject.getString("q");
+
+            quoteLabel.setText(quote);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            quoteLabel.setText("Failed to load quote.");
+        }
     }
 }

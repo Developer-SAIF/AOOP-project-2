@@ -1,3 +1,4 @@
 .qodo
 # Project exclude paths
 /target/
+.qodo

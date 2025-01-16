@@ -2,6 +2,7 @@ module com.example.aoopproject {
     requires de.jensd.fx.glyphs.fontawesome;
     requires java.sql;
     requires MaterialFX;
+    requires org.json;
 
 
     opens com.example.aoopproject to javafx.fxml;

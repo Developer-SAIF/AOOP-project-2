@@ -8,11 +8,22 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class StudentController {
-    public VBox studentVBox;
+
+    @FXML
+    public VBox adminVBox;
+
+    @FXML
     public Button notificationsButton;
+
+    @FXML
     public Button notesButton;
+
+    @FXML
     public Button timerButton;
+
+    @FXML
     public Button doubtsolvingButton;
+
     @FXML
     private Button logoutButton;
 

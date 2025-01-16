@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
@@ -7,6 +8,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.LoginController">
@@ -17,32 +19,44 @@
          </image></ImageView>
       <AnchorPane fx:id="subPane" layoutX="463.0" layoutY="54.0" prefHeight="555.0" prefWidth="300.0" style="-fx-background-color: #E4F9F5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Log in to your account">
+            <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Log in to your account" textFill="#40514e">
                <font>
                   <Font name="Arial Bold" size="20.0" />
                </font>
             </Label>
-            <MFXTextField fx:id="userIdField" floatMode="BORDER" floatingText="User ID" layoutX="70.0" layoutY="116.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
+            <MFXTextField fx:id="userIdField" floatingText="User ID" layoutX="70.0" layoutY="116.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
                <font>
                   <Font size="14.0" />
                </font>
+               <textFill>
+                  <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987" opacity="0.8700000047683716" />
+               </textFill>
             </MFXTextField>
-            <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatMode="BORDER" floatingText="Password" layoutX="70.0" layoutY="177.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
+            <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatingText="Password" layoutX="70.0" layoutY="177.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
                <font>
                   <Font size="14.0" />
                </font>
+               <textFill>
+                  <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987" opacity="0.8700000047683716" />
+               </textFill>
             </MFXPasswordField>
-            <MFXButton fx:id="loginButton" layoutX="73.0" layoutY="246.0" onAction="#handleLoginButtonAction" prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Log in">
+            <MFXButton fx:id="loginButton" layoutX="73.0" layoutY="246.0" onAction="#handleLoginButtonAction" prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Log in" textFill="#40514e">
                <font>
                   <Font name="Arial" size="14.0" />
                </font>
+               <graphic>
+                  <FontAwesomeIconView fill="#40514e" glyphName="TRASH" text="" />
+               </graphic>
             </MFXButton>
-            <MFXButton fx:id="deleteUserButton" layoutX="218.0" layoutY="247.0" onAction="#handleDeleteUserButtonAction" prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Delete user">
+            <MFXButton fx:id="deleteUserButton" layoutX="204.0" layoutY="247.0" onAction="#handleDeleteUserButtonAction" prefHeight="30.0" prefWidth="114.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Delete user" textFill="#40514e">
                <font>
                   <Font name="Arial" size="14.0" />
                </font>
+               <graphic>
+                  <FontAwesomeIconView fill="#40514e" glyphName="TRASH" text="" />
+               </graphic>
             </MFXButton>
-            <Label fx:id="statusLabel" layoutX="76.0" layoutY="297.0" styleClass="hidden" text="Status">
+            <Label fx:id="statusLabel" layoutX="74.0" layoutY="297.0" styleClass="hidden" text="Status">
                <font>
                   <Font size="14.0" />
                </font>
@@ -52,12 +66,28 @@
                   <Font name="Arial" size="14.0" />
                </font>
             </Label>
-            <MFXButton fx:id="registrationButton" layoutX="253.0" layoutY="334.0" onAction="#handleRegisterButtonAction" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Sign up">
+            <MFXButton fx:id="registrationButton" layoutX="253.0" layoutY="334.0" onAction="#handleRegisterButtonAction" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Sign up" textFill="#40514e">
                <font>
                   <Font name="Arial" size="14.0" />
                </font>
+               <graphic>
+                  <FontAwesomeIconView fill="#40514e" glyphName="USER_PLUS" text="" />
+               </graphic>
             </MFXButton>
          </children>
       </AnchorPane>
+      <Label layoutX="19.0" layoutY="23.0" prefHeight="55.0" prefWidth="356.0" text="Study Manager" textFill="#40514e">
+         <font>
+            <Font name="Arial Black" size="37.0" />
+         </font>
+         <graphic>
+            <FontAwesomeIconView fill="#40514e" glyphName="BOOK" text="" />
+         </graphic>
+      </Label>
+      <Label fx:id="quoteLabel" layoutX="46.0" layoutY="72.0" prefHeight="144.0" prefWidth="308.0" text="Chase your dream..." textFill="#40514e" textOverrun="CLIP" wrapText="true">
+         <font>
+            <Font name="System Bold Italic" size="18.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

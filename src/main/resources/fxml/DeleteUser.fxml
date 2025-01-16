@@ -8,6 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.DeleteUserController">
@@ -18,7 +19,7 @@
          </image></ImageView>
       <Pane layoutX="215.0" layoutY="137.0" prefHeight="187.0" prefWidth="221.0" style="-fx-background-color: #E4F9F5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
           <children>
-              <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Log in to your account">
+              <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Delete your account" textFill="#40514e">
                   <font>
                       <Font name="Arial Bold" size="20.0" />
                   </font>
@@ -27,13 +28,19 @@
                   <font>
                       <Font size="14.0" />
                   </font>
+               <textFill>
+                  <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987" opacity="0.8700000047683716" />
+               </textFill>
               </MFXTextField>
               <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatMode="BORDER" floatingText="Password" layoutX="70.0" layoutY="177.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
                   <font>
                       <Font size="14.0" />
                   </font>
+               <textFill>
+                  <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987" opacity="0.8700000047683716" />
+               </textFill>
               </MFXPasswordField>
-              <MFXButton fx:id="backButton" layoutX="218.0" layoutY="247.0" onAction="#handleBackButtonAction" prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Back">
+              <MFXButton fx:id="backButton" layoutX="218.0" layoutY="247.0" onAction="#handleBackButtonAction" prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Back" textFill="#40514e">
                   <font>
                       <Font name="Arial" size="14.0" />
                   </font>
@@ -43,7 +50,7 @@
                       <Font size="14.0" />
                   </font>
               </Label>
-            <MFXButton fx:id="deleteUserButton" layoutX="70.0" layoutY="247.0" onAction="#handleDeleteButtonAction" prefHeight="30.0" prefWidth="131.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Delete this user">
+            <MFXButton fx:id="deleteUserButton" layoutX="70.0" layoutY="247.0" onAction="#handleDeleteButtonAction" prefHeight="30.0" prefWidth="131.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Delete this user" textFill="#40514e">
                <font>
                   <Font name="Arial" size="14.0" />
                </font>
