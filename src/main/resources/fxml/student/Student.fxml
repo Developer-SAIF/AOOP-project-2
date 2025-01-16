@@ -1,25 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.example.aoopproject.controllers.student.StudentController">
-<left>
-    <VBox spacing="10.0" style="-fx-background-color: #11999E; -fx-padding: 10px;">
-        <children>
-            <FontAwesomeIconView glyphName="USER" size="34.0" />
-            <MFXButton text="Dashboard" />
-            <MFXButton text="Message" />
-            <MFXButton text="Documents" />
-            <MFXButton text="Q&amp;A" />
-            <MFXButton text="Setting" />
-            <MFXButton fx:id="logoutButton" onAction="#handleLogoutButtonAction" text="Log out" />
-        </children>
-    </VBox>
-</left>
-<center>
-    <BorderPane style="-fx-background-color: #FFFFFF;" />
-</center>
-</BorderPane>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
+  <tabs>
+    <Tab fx:id="dashboardTab" text="Dashboard">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="600.0" />
+      </content>
+    </Tab>
+    <Tab fx:id="messageTab" text="Message">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      </content>
+    </Tab>
+      <Tab fx:id="documentsTab" text="Documents">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+      </Tab>
+      <Tab fx:id="qnaTab" text="Q&amp;A">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+      </Tab>
+      <Tab fx:id="settingsTab" text="Settings">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+      </Tab>
+      <Tab fx:id="notificationsTab" text="Notification">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+         </content>
+      </Tab>
+  </tabs>
+   <cursor>
+      <Cursor fx:constant="HAND" />
+   </cursor>
+</TabPane>
