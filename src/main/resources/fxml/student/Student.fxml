@@ -1,44 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
-  <tabs>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.student.StudentController">
+    <cursor>
+        <Cursor fx:constant="HAND" />
+    </cursor>
     <Tab fx:id="dashboardTab" text="Dashboard">
-      <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="600.0" />
-      </content>
+      <graphic>
+         <FontAwesomeIconView glyphName="BARS" />
+      </graphic>
     </Tab>
     <Tab fx:id="messageTab" text="Message">
-      <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
+      <graphic>
+         <FontAwesomeIconView glyphName="ENVELOPE" />
+      </graphic>
     </Tab>
-      <Tab fx:id="documentsTab" text="Documents">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-         </content>
-      </Tab>
-      <Tab fx:id="qnaTab" text="Q&amp;A">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-         </content>
-      </Tab>
-      <Tab fx:id="settingsTab" text="Settings">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-         </content>
-      </Tab>
-      <Tab fx:id="notificationsTab" text="Notification">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-         </content>
-      </Tab>
-  </tabs>
-   <cursor>
-      <Cursor fx:constant="HAND" />
-   </cursor>
+    <Tab fx:id="documentsTab" text="Documents">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="FILE" />
+      </graphic>
+    </Tab>
+    <Tab fx:id="qnaTab" text="Q&amp;A">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="QUESTION_CIRCLE" />
+      </graphic>
+    </Tab>
+    <Tab fx:id="settingsTab" text="Settings">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="COG" />
+      </graphic>
+    </Tab>
+    <Tab fx:id="notificationsTab" text="Notification">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="BELL" />
+      </graphic>
+    </Tab>
+    <Tab fx:id="journalTab" text="Journal">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <VBox>
+                <padding>
+                    <Insets bottom="10" left="10" right="10" top="10" />
+                </padding>
+                <HBox spacing="10">
+                    <Label text="Date:" />
+                    <DatePicker fx:id="datePicker" />
+                </HBox>
+                <TextArea fx:id="journalTextArea" prefHeight="100" promptText="Write your journal here..." />
+                <HBox spacing="10">
+                    <Button onAction="#addJournal" text="Add" />
+                    <Button onAction="#editJournal" text="Edit" />
+                    <Button onAction="#deleteJournal" text="Delete" />
+                </HBox>
+                <ListView fx:id="journalListView" />
+            </VBox>
+        </AnchorPane>
+      <graphic>
+         <FontAwesomeIconView glyphName="BOOK" />
+      </graphic>
+    </Tab>
 </TabPane>
