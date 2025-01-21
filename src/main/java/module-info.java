@@ -3,6 +3,10 @@ module com.example.aoopproject {
     requires java.sql;
     requires MaterialFX;
     requires org.json;
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires java.compiler;
+    requires org.jsoup;
 
 
     opens com.example.aoopproject to javafx.fxml;

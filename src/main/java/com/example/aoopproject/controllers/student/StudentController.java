@@ -1,22 +1,31 @@
 package com.example.aoopproject.controllers.student;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.*;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
+import javafx.scene.layout.StackPane;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import javafx.scene.control.TextArea;
 
+import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 
 public class StudentController {
@@ -58,6 +67,9 @@ public class StudentController {
 
     @FXML
     public void initialize() {
+
+        // Journal part starts here
+
         journalEntries = FXCollections.observableArrayList();
         journalListView.setItems(journalEntries);
 
@@ -79,6 +91,23 @@ public class StudentController {
         } catch (IOException e) {
             System.err.println("Error creating or loading journals: " + e.getMessage());
         }
+
+        // Journal part ends here
+
+        // Notice part starts here
+
+        // Initialize the notices list
+        notices = FXCollections.observableArrayList();
+        noticeListView.setItems(notices);
+
+        // Create and add loading indicator
+        loadingIndicator = new ProgressIndicator();
+        loadingIndicator.setMaxSize(50, 50);
+
+        // Initial load of notices
+        refreshNotices();
+
+        // Notice part ends here
     }
 
     @FXML
@@ -179,4 +208,93 @@ public class StudentController {
     }
 
     // Journal tab controller ends here
+
+    // Notices tab controller starts here
+
+    @FXML
+    public Tab noticesTab;
+
+    @FXML
+    private ListView<Hyperlink> noticeListView;
+
+    @FXML
+    private StackPane noticeContainer;
+
+    @FXML
+    private ProgressIndicator loadingIndicator;
+    private ObservableList<Hyperlink> notices;
+
+
+
+    private void fetchNoticesAsync() {
+        Thread fetchThread = new Thread(() -> {
+            try {
+                Document doc = Jsoup.connect("https://www.uiu.ac.bd/notice/")
+                        .timeout(15000)
+                        .get();
+
+                Elements noticeElements = doc.select("#notice-container .notice .details .title a");
+
+                Platform.runLater(() -> {
+                    notices.clear();
+                    for (Element element : noticeElements) {
+                        String title = element.text();
+                        String link = element.attr("href");
+
+                        Hyperlink hyperlink = new Hyperlink(title);
+                        hyperlink.setWrapText(true);
+                        hyperlink.setOnAction(e -> openUrlInBackground(link));
+
+                        notices.add(hyperlink);
+                    }
+
+                    noticeContainer.getChildren().remove(loadingIndicator);
+
+                    if (notices.isEmpty()) {
+                        Hyperlink noNoticesLink = new Hyperlink("No notices available at this time");
+                        noNoticesLink.setDisable(true);
+                        notices.add(noNoticesLink);
+                    }
+                });
+
+            } catch (IOException e) {
+                Platform.runLater(() -> {
+                    notices.clear();
+                    Hyperlink errorLink = new Hyperlink("Error loading notices. Please check your internet connection.");
+                    errorLink.setDisable(true);
+                    notices.add(errorLink);
+                    noticeContainer.getChildren().remove(loadingIndicator);
+                });
+            }
+        });
+        fetchThread.setDaemon(true);
+        fetchThread.start();
+    }
+
+    private void openUrlInBackground(String url) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception ex) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Could not open the notice");
+                    alert.setContentText("Failed to open the URL in browser. Please try again.");
+                    alert.showAndWait();
+                });
+            }
+        });
+    }
+
+    @FXML
+    private void refreshNotices() {
+        // Remove loading indicator if it exists
+        noticeContainer.getChildren().remove(loadingIndicator);
+        // Clear notices and start fetch
+        notices.clear();
+        fetchNoticesAsync();
+    }
+
+    // Notices tab controller ends here
 }

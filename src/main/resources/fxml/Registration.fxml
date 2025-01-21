@@ -11,51 +11,62 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.RegistrationController">
-    <children>
-        <ImageView fitHeight="601.0" fitWidth="400.0" layoutX="49.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="400.0" AnchorPane.topAnchor="0.0">
-            <image>
-                <Image url="@../images/Login_page.jpg" />
-            </image></ImageView>
-        <Pane layoutX="215.0" layoutY="137.0" prefHeight="187.0" prefWidth="221.0" style="-fx-background-color: #E4F9F5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <children>
-                <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Register new user" textFill="#40514e">
-                    <font>
-                        <Font name="Arial Bold" size="20.0" />
-                    </font>
-                </Label>
-                <MFXTextField fx:id="userIdField" floatMode="BORDER" floatingText="User ID" layoutX="70.0" layoutY="116.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-               <textFill>
-                  <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987" opacity="0.8700000047683716" />
-               </textFill>
-                </MFXTextField>
-                <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatMode="BORDER" floatingText="Password" layoutX="70.0" layoutY="177.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-               <textFill>
-                  <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987" opacity="0.8700000047683716" />
-               </textFill>
-                </MFXPasswordField>
-                <MFXButton fx:id="backButton" layoutX="218.0" layoutY="247.0" onAction="#handleBackButtonAction" prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Back" textFill="#40514e">
-                    <font>
-                        <Font name="Arial" size="14.0" />
-                    </font>
-                </MFXButton>
-                <Label fx:id="statusLabel" layoutX="76.0" layoutY="297.0" styleClass="hidden" text="Status">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Label>
-                <MFXButton fx:id="registerButton" layoutX="70.0" layoutY="247.0" onAction="#handleRegisterButtonAction" prefHeight="30.0" prefWidth="131.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #30E3CA;" text="Register this user" textFill="#40514e">
-                    <font>
-                        <Font name="Arial" size="14.0" />
-                    </font>
-                </MFXButton>
-            </children>
-        </Pane>
-    </children>
+<AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.aoopproject.controllers.RegistrationController">
+    <ImageView fitHeight="601.0" fitWidth="400.0" layoutX="49.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="400.0"
+               AnchorPane.topAnchor="0.0">
+        <Image url="@../images/Login_page.jpg"/>
+    </ImageView>
+    <Pane layoutX="215.0" layoutY="137.0" prefHeight="187.0" prefWidth="221.0" style="-fx-background-color: #E4F9F5;"
+          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="0.0">
+        <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Register new user"
+               textFill="#40514e">
+            <font>
+                <Font name="Arial Bold" size="20.0"/>
+            </font>
+        </Label>
+        <MFXTextField fx:id="userIdField" floatMode="BORDER" floatingText="User ID" layoutX="70.0" layoutY="116.0"
+                      prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
+            <font>
+                <Font size="14.0"/>
+            </font>
+            <textFill>
+                <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987"
+                       opacity="0.8700000047683716"/>
+            </textFill>
+        </MFXTextField>
+        <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatMode="BORDER" floatingText="Password"
+                          layoutX="70.0" layoutY="177.0" prefHeight="40.0" prefWidth="250.0"
+                          style="-fx-border-color: #30E3CA;">
+            <font>
+                <Font size="14.0"/>
+            </font>
+            <textFill>
+                <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987"
+                       opacity="0.8700000047683716"/>
+            </textFill>
+        </MFXPasswordField>
+        <MFXButton fx:id="backButton" layoutX="218.0" layoutY="247.0" onAction="#handleBackButtonAction"
+                   prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE"
+                   style="-fx-background-color: #30E3CA;" text="Back" textFill="#40514e">
+            <font>
+                <Font name="Arial" size="14.0"/>
+            </font>
+        </MFXButton>
+        <Label fx:id="statusLabel" layoutX="76.0" layoutY="297.0" style="-fx-visibility: hidden" text="Status">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <MFXButton fx:id="registerButton" layoutX="70.0" layoutY="247.0" onAction="#handleRegisterButtonAction"
+                   prefHeight="30.0" prefWidth="131.0" rippleAnimateBackground="false" rippleColor="WHITE"
+                   style="-fx-background-color: #30E3CA;" text="Register this user" textFill="#40514e">
+            <font>
+                <Font name="Arial" size="14.0"/>
+            </font>
+        </MFXButton>
+    </Pane>
 </AnchorPane>

@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
-  <tabs>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <Tab fx:id="notificationsTab" text="Notification">
-      <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
+      <graphic>
+         <FontAwesomeIconView glyphName="BELL" />
+      </graphic>
     </Tab>
     <Tab fx:id="notesTab" text="Notes">
-      <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
+      <graphic>
+         <FontAwesomeIconView glyphName="BOOK" />
+      </graphic>
     </Tab>
-      <Tab fx:id="timerTab" text="Timer">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-         </content>
-      </Tab>
-      <Tab fx:id="doubtSolvingTab" text="Doubt Solving">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-         </content>
-      </Tab>
-  </tabs>
+    <Tab fx:id="timerTab" text="Timer">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="HOURGLASS" />
+      </graphic>
+    </Tab>
+    <Tab fx:id="doubtSolvingTab" text="Doubt Solving">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="QUESTION_CIRCLE" />
+      </graphic>
+    </Tab>
 </TabPane>
