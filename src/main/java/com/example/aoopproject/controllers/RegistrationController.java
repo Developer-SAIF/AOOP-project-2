@@ -26,6 +26,9 @@ public class RegistrationController {
     private TextField userIdField;
 
     @FXML
+    private TextField nicknameField;
+
+    @FXML
     public Button registerButton;
 
     @FXML
@@ -35,9 +38,10 @@ public class RegistrationController {
     private void handleRegisterButtonAction() {
         String userId = userIdField.getText();
         String password = passwordField.getText();
+        String nickname = nicknameField.getText();
 
         // Validate input (e.g., non-empty, password length, etc.)
-        if (userId.isBlank() || password.isBlank()) {
+        if (userId.isBlank() || password.isBlank() || nickname.isBlank()) {
             statusLabel.setText("Please fill all fields.");
             statusLabel.setOpacity(1.0);
             statusLabel.setVisible(true);
@@ -46,10 +50,11 @@ public class RegistrationController {
 
         // Insert the new user record into the remote database
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String insertQuery = "INSERT INTO Users (ID, Password, Type) VALUES (?, ?, 'student')";
+            String insertQuery = "INSERT INTO Users (ID, Password, Nickname, Type) VALUES (?, ?, ?, 'student')";
             PreparedStatement statement = connection.prepareStatement(insertQuery);
             statement.setString(1, userId);
             statement.setString(2, password);
+            statement.setString(3, nickname);
 
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted > 0) {
@@ -81,4 +86,3 @@ public class RegistrationController {
         statusLabel.setVisible(false);
     }
 }
-

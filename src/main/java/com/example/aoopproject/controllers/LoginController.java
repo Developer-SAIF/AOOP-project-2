@@ -1,6 +1,7 @@
 package com.example.aoopproject.controllers;
 
 import com.example.aoopproject.database.DatabaseConnection;
+import com.example.aoopproject.models.UserSession;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,7 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import com.example.aoopproject.views.ViewFactory;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -94,7 +94,7 @@ public class LoginController {
 
     private String authenticate(String id, String password) {
         String table = "Users";
-        String query = "SELECT Type FROM " + table + " WHERE ID = ? AND Password = ?";
+        String query = "SELECT Type, Nickname FROM " + table + " WHERE ID = ? AND Password = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -105,19 +105,23 @@ public class LoginController {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                return resultSet.getString("Type"); // return the Type if a record is found
+                String userType = resultSet.getString("Type");
+                String nickname = resultSet.getString("Nickname");
+
+                // Start the user session
+                UserSession.getInstance().startSession(id, userType, nickname);
+
+                return userType;
             }
 
         } catch (SQLException e) {
-            // Log the exception (consider using a logging framework)
             System.err.println("Database error: " + e.getMessage());
-            // Optionally, update the status label to inform the user
             statusLabel.setText("An error occurred. Please try again later.");
             statusLabel.setOpacity(1.0);
             statusLabel.setVisible(true);
         }
 
-        return null; // return null if authentication fails
+        return null;
     }
 
     @FXML

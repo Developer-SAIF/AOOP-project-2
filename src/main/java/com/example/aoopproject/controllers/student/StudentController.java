@@ -1,9 +1,11 @@
 package com.example.aoopproject.controllers.student;
 
+import com.example.aoopproject.models.UserSession;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
@@ -11,24 +13,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import javafx.scene.control.TextArea;
-
 import java.awt.*;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
-public class StudentController {
+public class StudentController implements Initializable {
 
     @FXML
     public Tab dashboardTab;
@@ -48,25 +49,8 @@ public class StudentController {
     @FXML
     public Tab notificationsTab;
 
-    // Journal tab controller starts here
-
     @FXML
-    public Tab journalTab;
-
-    @FXML
-    private DatePicker datePicker;
-
-    @FXML
-    private TextArea journalTextArea;
-
-    @FXML
-    private ListView<JournalEntry> journalListView;
-    private ObservableList<JournalEntry> journalEntries;
-
-    private Path journalsFilePath;
-
-    @FXML
-    public void initialize() {
+    public void initialize(URL location, ResourceBundle resources) {
 
         // Journal part starts here
 
@@ -96,19 +80,37 @@ public class StudentController {
 
         // Notice part starts here
 
-        // Initialize the notices list
         notices = FXCollections.observableArrayList();
         noticeListView.setItems(notices);
 
-        // Create and add loading indicator
         loadingIndicator = new ProgressIndicator();
         loadingIndicator.setMaxSize(50, 50);
 
-        // Initial load of notices
         refreshNotices();
 
         // Notice part ends here
+
+        // Message part starts here
+
+        // Message part ends here
     }
+
+    // Journal tab controller starts here
+
+    @FXML
+    public Tab journalTab;
+
+    @FXML
+    private DatePicker datePicker;
+
+    @FXML
+    private TextArea journalTextArea;
+
+    @FXML
+    private ListView<JournalEntry> journalListView;
+    private ObservableList<JournalEntry> journalEntries;
+
+    private Path journalsFilePath;
 
     @FXML
     private void addJournal() {
@@ -152,7 +154,7 @@ public class StudentController {
 
         try (FileWriter file = new FileWriter(journalsFilePath.toFile())) {
             System.out.println("Saving to journals.json file at: " + journalsFilePath); // Log the file location
-            System.out.println("Saving journals: " + jsonArray.toString()); // Log before saving
+            System.out.println("Saving journals: " + jsonArray); // Log before saving
             file.write(jsonArray.toString());
         } catch (IOException e) {
             System.err.println("Error saving journals: " + e.getMessage());
@@ -289,12 +291,18 @@ public class StudentController {
 
     @FXML
     private void refreshNotices() {
-        // Remove loading indicator if it exists
+
         noticeContainer.getChildren().remove(loadingIndicator);
-        // Clear notices and start fetch
+
         notices.clear();
         fetchNoticesAsync();
     }
 
     // Notices tab controller ends here
+
+    // Messages tab controller starts here
+
+
+
+    // Messages tab controller ends here
 }
