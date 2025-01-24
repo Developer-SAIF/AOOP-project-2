@@ -7,7 +7,7 @@ module com.example.aoopproject {
     requires javafx.fxml;
     requires java.compiler;
     requires org.jsoup;
-
+    requires Java.WebSocket;
 
     opens com.example.aoopproject to javafx.fxml;
     opens com.example.aoopproject.controllers to javafx.fxml;

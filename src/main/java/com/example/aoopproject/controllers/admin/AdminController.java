@@ -1,14 +1,15 @@
 package com.example.aoopproject.controllers.admin;
 
-import com.example.aoopproject.views.ViewFactory;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 public class AdminController {
 
+    private WebSocketClient webSocketClient;
 
+    public void cleanup() {
+        if (webSocketClient != null && webSocketClient.isOpen()) {
+            webSocketClient.close();
+        }
+    }
 }
