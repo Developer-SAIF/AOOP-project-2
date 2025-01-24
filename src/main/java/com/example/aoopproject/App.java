@@ -3,11 +3,7 @@ package com.example.aoopproject;
 import com.example.aoopproject.controllers.student.StudentController;
 import com.example.aoopproject.views.ViewFactory;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +12,7 @@ public class App extends Application {
     private List<StudentController> activeControllers = new ArrayList<>();
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
         instance = this; // Set instance in start method
         ViewFactory.getInstance().showLoginScreen(primaryStage);
         primaryStage.show();

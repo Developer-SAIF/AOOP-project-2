@@ -41,7 +41,4 @@ public class UserSession {
         return nickname;
     }
 
-    public boolean isLoggedIn() {
-        return userId != null;
-    }
 }

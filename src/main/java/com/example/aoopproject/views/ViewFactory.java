@@ -4,7 +4,6 @@ import com.example.aoopproject.App;
 import com.example.aoopproject.controllers.admin.AdminController;
 import com.example.aoopproject.controllers.student.StudentController;
 import com.example.aoopproject.models.UserSession;
-import com.example.aoopproject.server.MessageServer;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -15,7 +14,6 @@ import javafx.scene.Scene;
 
 public class ViewFactory {
     private static ViewFactory instance;
-    private MessageServer messageServer;
 
     private ViewFactory() {
     }

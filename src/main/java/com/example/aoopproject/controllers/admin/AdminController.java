@@ -1,7 +1,6 @@
 package com.example.aoopproject.controllers.admin;
 
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 
 public class AdminController {
 

@@ -1,6 +1,7 @@
 package com.example.aoopproject.controllers.student;
 
 import com.example.aoopproject.database.DatabaseConnection;
+import com.example.aoopproject.models.SharedFile;
 import com.example.aoopproject.models.User;
 import com.example.aoopproject.models.UserSession;
 import com.example.aoopproject.services.MessagePollingService;
@@ -11,7 +12,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,15 +30,15 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,7 +47,6 @@ import org.jsoup.select.Elements;
 import com.example.aoopproject.models.Message;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import java.util.List;
 
 public class StudentController implements Initializable {
 
@@ -108,6 +112,14 @@ public class StudentController implements Initializable {
         // Message part starts here
         initializeMessaging();
         // Message part ends here
+
+        // File sharing part starts here
+
+        setupListView();
+        loadFiles();
+        setupAddLinkButton();
+
+        // File sharing part ends here
     }
 
     // Journal tab controller starts here
@@ -585,4 +597,127 @@ public class StudentController implements Initializable {
     }
 
     // Messages tab controller ends here
+
+    // File sharing tab controller starts here
+
+    @FXML
+    private TextField linkUrlField;
+
+    @FXML
+    private TextField linkNameField;
+
+    @FXML
+    private Button addLinkButton;
+
+    @FXML
+    private ListView<SharedFile> filesListView;
+
+    @FXML
+    private Label statusLabel;
+
+    private final ObservableList<SharedFile> filesList = FXCollections.observableArrayList();
+
+    private void setupListView() {
+        filesListView.setItems(filesList);
+        filesListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(SharedFile file, boolean empty) {
+                super.updateItem(file, empty);
+                if (empty || file == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    // Create custom cell layout
+                    HBox container = new HBox(10); // 10 pixels spacing
+                    VBox detailsBox = new VBox(5);
+
+                    Label nameLabel = new Label(file.getFileName());
+                    Label uploaderLabel = new Label("Uploaded by: " + file.getUploaderId());
+                    detailsBox.getChildren().addAll(nameLabel, uploaderLabel);
+
+                    Button openButton = new Button("Open Link");
+                    openButton.setOnAction(e -> file.openInBrowser());
+
+                    container.getChildren().addAll(detailsBox, openButton);
+
+                    // Add delete button only for uploader
+                    if (file.getUploaderId().equals(UserSession.getInstance().getUserId())) {
+                        Button deleteButton = new Button("Delete");
+                        deleteButton.setOnAction(e -> handleDeleteFile(file));
+                        container.getChildren().add(deleteButton);
+                    }
+
+                    HBox.setHgrow(detailsBox, Priority.ALWAYS);
+                    setGraphic(container);
+                }
+            }
+        });
+    }
+
+    private void setupAddLinkButton() {
+        addLinkButton.setOnAction(e -> handleAddLink());
+    }
+
+    private void handleAddLink() {
+        String url = linkUrlField.getText().trim();
+        String name = linkNameField.getText().trim();
+
+        if (url.isEmpty() || name.isEmpty()) {
+            showStatus("Please enter both link name and URL", true);
+            return;
+        }
+
+        if (!isValidUrl(url)) {
+            showStatus("Please enter a valid URL", true);
+            return;
+        }
+
+        SharedFile newFile = new SharedFile(
+                UUID.randomUUID().toString(),
+                name,
+                url,
+                UserSession.getInstance().getUserId(),
+                LocalDateTime.now()
+        );
+
+        if (newFile.uploadFile()) {
+            filesList.add(newFile);
+            linkUrlField.clear();
+            linkNameField.clear();
+            showStatus("Link added successfully!", false);
+        } else {
+            showStatus("Failed to add link. Please try again.", true);
+        }
+    }
+
+    private void handleDeleteFile(SharedFile file) {
+        if (file.deleteFile(UserSession.getInstance().getUserId())) {
+            filesList.remove(file);
+            showStatus("Link deleted successfully!", false);
+        } else {
+            showStatus("Failed to delete link", true);
+        }
+    }
+
+    private void loadFiles() {
+        filesList.clear();
+        filesList.addAll(SharedFile.getAllFiles());
+    }
+
+    private void showStatus(String message, boolean isError) {
+        statusLabel.setText(message);
+        statusLabel.setStyle(isError ? "-fx-text-fill: red;" : "-fx-text-fill: green;");
+        statusLabel.setVisible(true);
+    }
+
+    private boolean isValidUrl(String url) {
+        try {
+            new java.net.URL(url).toURI();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // File sharing tab controller ends here
 }

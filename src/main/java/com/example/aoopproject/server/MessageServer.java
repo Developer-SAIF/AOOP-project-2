@@ -111,9 +111,6 @@ public class MessageServer extends WebSocketServer {
 
         } catch (Exception e) {
             System.err.println("Could not start server: " + e.getMessage());
-            if (e instanceof BindException) {
-                System.err.println("Port " + PORT + " is already in use. Please stop any other instances of MessageServer first.");
-            }
             System.exit(1);
         }
     }

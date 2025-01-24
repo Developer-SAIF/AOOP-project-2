@@ -11,8 +11,12 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -47,7 +51,40 @@
       </graphic>
     </Tab>
     <Tab fx:id="documentsTab" text="Documents">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns:fx="http://javafx.com/fxml/1">
+                <padding>
+                    <Insets bottom="20" left="20" right="20" top="20" />
+                </padding>
+
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Share Online Links" />
+
+                <GridPane hgap="10" prefHeight="98.0" prefWidth="248.0" vgap="10">
+                    <Label text="Link Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="linkNameField" promptText="Enter link name" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label text="URL:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextField fx:id="linkUrlField" promptText="Enter URL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Button fx:id="addLinkButton" text="Add Link" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+
+                <Label fx:id="statusLabel" visible="false" wrapText="true" />
+
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Shared Links" />
+                <ListView fx:id="filesListView" prefHeight="295.0" prefWidth="248.0" VBox.vgrow="ALWAYS" />
+
+            </VBox>
+        </AnchorPane>
       <graphic>
          <FontAwesomeIconView glyphName="FILE" />
       </graphic>
