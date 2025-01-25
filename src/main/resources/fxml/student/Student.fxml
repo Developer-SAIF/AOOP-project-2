@@ -21,9 +21,6 @@
 <?import javafx.scene.layout.VBox?>
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.student.StudentController">
-    <cursor>
-        <Cursor fx:constant="HAND" />
-    </cursor>
     <Tab fx:id="dashboardTab" text="Dashboard">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="600.0" />
       <graphic>
@@ -143,6 +140,27 @@
         </AnchorPane>
         <graphic>
             <FontAwesomeIconView glyphName="BELL" />
+        </graphic>
+    </Tab>
+    <Tab fx:id="aiTab" text="AI helper">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <VBox layoutX="97.0" layoutY="7.0" prefHeight="557.0" prefWidth="685.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <TextField fx:id="inputField" prefHeight="26.0" prefWidth="623.0" promptText="Ask your question">
+               <VBox.margin>
+                  <Insets bottom="20.0" left="50.0" right="50.0" top="10.0" />
+               </VBox.margin></TextField>
+                <Button onAction="#getAnswer" text="Get Answer">
+               <VBox.margin>
+                  <Insets left="360.0" />
+               </VBox.margin></Button>
+                <TextArea fx:id="outputArea" prefHeight="520.0" prefWidth="800.0" promptText="Answers will be generate here">
+               <padding>
+                  <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+               </padding></TextArea>
+            </VBox>
+        </AnchorPane>
+        <graphic>
+            <FontAwesomeIconView glyphName="LAPTOP" />
         </graphic>
     </Tab>
 </TabPane>

@@ -16,7 +16,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,13 +23,14 @@ import org.json.JSONObject;
 import javafx.scene.control.TextArea;
 import java.awt.Desktop;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,6 +67,9 @@ public class StudentController implements Initializable {
 
     @FXML
     public Tab notificationsTab;
+
+    @FXML
+    public Tab aiTab;
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
@@ -120,6 +123,13 @@ public class StudentController implements Initializable {
         setupAddLinkButton();
 
         // File sharing part ends here
+
+        // Ai helper part starts here
+
+        outputArea.setWrapText(true);
+        outputArea.setEditable(false);
+
+        // Ai helper part ends here
     }
 
     // Journal tab controller starts here
@@ -720,4 +730,106 @@ public class StudentController implements Initializable {
     }
 
     // File sharing tab controller ends here
+
+    // Ai helper tab controller starts here
+
+    private static final String API_URL = "https://api.scaleway.ai/36ff389f-76e7-4451-b35d-6748110f4dec/v1/chat/completions";
+    private static final String API_KEY = "8d10c4c7-b397-47b6-8fe2-0533b1c2725c";
+
+    @FXML
+    private TextField inputField;
+
+    @FXML
+    private TextArea outputArea;
+
+    @FXML
+    private void getAnswer() {
+        String question = inputField.getText().trim();
+        if (question.isEmpty()) {
+            outputArea.setText("Please enter a question first.");
+            return;
+        }
+
+        outputArea.setText("Thinking...");
+        inputField.setDisable(true);
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                String response = sendRequest(question);
+                Platform.runLater(() -> {
+                    outputArea.setText(parseResponse(response));
+                    inputField.setDisable(false);
+                    inputField.clear();
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    String errorMessage = "Error: " + e.getMessage();
+                    if (e.getMessage().contains("403")) {
+                        errorMessage += "\nAPI authentication failed. Please check your API key.";
+                    }
+                    outputArea.setText(errorMessage);
+                    inputField.setDisable(false);
+                });
+            }
+        });
+    }
+
+    private String sendRequest(String question) throws Exception {
+        URL url = new URL(API_URL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + API_KEY);
+        conn.setDoOutput(true);
+
+        String jsonInput = String.format("""
+            {
+                "model": "llama-3.3-70b-instruct",
+                "messages": [
+                    {"role": "system", "content": "You are a study helper assistant"},
+                    {"role": "user", "content": "%s"}
+                ],
+                "max_tokens": 1088,
+                "temperature": 0.7,
+                "top_p": 0.7,
+                "presence_penalty": 0,
+                "stream": false
+            }""", question.replace("\"", "\\\""));
+
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = jsonInput.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        if (conn.getResponseCode() != 200) {
+            throw new IOException("Server returned HTTP response code: " +
+                    conn.getResponseCode() + " " + conn.getResponseMessage() +
+                    " for URL: " + API_URL);
+        }
+
+        StringBuilder response = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+        }
+
+        return response.toString();
+    }
+
+    private String parseResponse(String jsonResponse) {
+        try {
+            JSONObject json = new JSONObject(jsonResponse);
+            return json.getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message")
+                    .getString("content");
+        } catch (Exception e) {
+            return "Error parsing response: " + e.getMessage();
+        }
+    }
+
+    // Ai helper tab controller ends here
 }
