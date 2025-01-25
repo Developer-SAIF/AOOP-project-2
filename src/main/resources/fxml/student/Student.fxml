@@ -3,118 +3,111 @@
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-         prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE"
-         xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="com.example.aoopproject.controllers.student.StudentController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.student.StudentController">
     <cursor>
         <Cursor fx:constant="HAND" />
     </cursor>
-
-    <!-- Dashboard Tab -->
     <Tab fx:id="dashboardTab" text="Dashboard">
-        <graphic>
-            <FontAwesomeIconView glyphName="BARS" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="600.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="BARS" />
+      </graphic>
     </Tab>
-
-    <!-- Message Tab -->
     <Tab fx:id="messageTab" text="Message">
-        <graphic>
-            <FontAwesomeIconView glyphName="ENVELOPE" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <SplitPane dividerPositions="0.3" prefHeight="569.0" prefWidth="800.0"
-                       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <SplitPane dividerPositions="0.3" prefHeight="569.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                 <ListView fx:id="userListView" prefHeight="517.0" prefWidth="236.0" />
                 <VBox spacing="10">
-                    <padding>
-                        <Insets bottom="10" left="10" right="10" top="10" />
-                    </padding>
                     <ListView fx:id="messageListView" prefHeight="254.0" prefWidth="571.0" VBox.vgrow="ALWAYS" />
                     <HBox spacing="10">
                         <TextArea fx:id="messageInput" prefHeight="33.0" prefWidth="477.0" HBox.hgrow="ALWAYS" />
                         <Button onAction="#sendMessage" text="Send" />
                     </HBox>
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10" />
+                    </padding>
                 </VBox>
             </SplitPane>
         </AnchorPane>
+      <graphic>
+         <FontAwesomeIconView glyphName="ENVELOPE" />
+      </graphic>
     </Tab>
-
-    <!-- Documents Tab -->
     <Tab fx:id="documentsTab" text="Documents">
-        <graphic>
-            <FontAwesomeIconView glyphName="FILE" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0"
-                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns:fx="http://javafx.com/fxml/1">
                 <padding>
                     <Insets bottom="20" left="20" right="20" top="20" />
                 </padding>
+
                 <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Share Online Links" />
+
                 <GridPane hgap="10" prefHeight="98.0" prefWidth="248.0" vgap="10">
-                    <columnConstraints>
-                        <ColumnConstraints />
-                        <ColumnConstraints />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                    </rowConstraints>
                     <Label text="Link Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField fx:id="linkNameField" promptText="Enter link name"
-                               GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <TextField fx:id="linkNameField" promptText="Enter link name" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
                     <Label text="URL:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <TextField fx:id="linkUrlField" promptText="Enter URL"
-                               GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <Button fx:id="addLinkButton" text="Add Link"
-                            GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <TextField fx:id="linkUrlField" promptText="Enter URL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Button fx:id="addLinkButton" text="Add Link" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
+
                 <Label fx:id="statusLabel" visible="false" wrapText="true" />
+
                 <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Shared Links" />
                 <ListView fx:id="filesListView" prefHeight="295.0" prefWidth="248.0" VBox.vgrow="ALWAYS" />
+
             </VBox>
         </AnchorPane>
+      <graphic>
+         <FontAwesomeIconView glyphName="FILE" />
+      </graphic>
     </Tab>
-
-    <!-- Q&A Tab -->
     <Tab fx:id="qnaTab" text="Q&amp;A">
-        <graphic>
-            <FontAwesomeIconView glyphName="QUESTION_CIRCLE" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="QUESTION_CIRCLE" />
+      </graphic>
     </Tab>
-
-    <!-- Settings Tab -->
     <Tab fx:id="settingsTab" text="Settings">
-        <graphic>
-            <FontAwesomeIconView glyphName="COG" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="COG" />
+      </graphic>
     </Tab>
-
-    <!-- Notifications Tab -->
     <Tab fx:id="notificationsTab" text="Notification">
-        <graphic>
-            <FontAwesomeIconView glyphName="BELL" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      <graphic>
+         <FontAwesomeIconView glyphName="BELL" />
+      </graphic>
     </Tab>
-
-    <!-- Journal Tab -->
     <Tab fx:id="journalTab" text="Journal">
-        <graphic>
-            <FontAwesomeIconView glyphName="BOOK" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
             <VBox>
                 <padding>
@@ -124,12 +117,10 @@
                     <Label text="Date:" />
                     <DatePicker fx:id="datePicker" />
                 </HBox>
-                <TextArea fx:id="journalTextArea" prefHeight="100.0" prefWidth="780.0"
-                          promptText="Write your journal here...">
-                    <cursor>
-                        <Cursor fx:constant="TEXT" />
-                    </cursor>
-                </TextArea>
+                <TextArea fx:id="journalTextArea" prefHeight="100.0" prefWidth="780.0" promptText="Write your journal here...">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor></TextArea>
                 <HBox prefWidth="780.0" spacing="10">
                     <Button onAction="#addJournal" text="Add" />
                     <Button onAction="#editJournal" text="Edit" />
@@ -138,16 +129,15 @@
                 <ListView fx:id="journalListView" prefHeight="400.0" prefWidth="780.0" />
             </VBox>
         </AnchorPane>
+      <graphic>
+         <FontAwesomeIconView glyphName="BOOK" />
+      </graphic>
     </Tab>
 
-    <!-- Notices Tab -->
     <Tab fx:id="noticesTab" text="Notices">
-        <graphic>
-            <FontAwesomeIconView glyphName="BELL" />
-        </graphic>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
             <StackPane fx:id="noticeContainer">
-                <ListView fx:id="noticeListView" prefHeight="521.0" prefWidth="800.0" VBox.vgrow="ALWAYS" />
+                <ListView fx:id="noticeListView" layoutX="14.0" layoutY="14.0" prefHeight="521.0" prefWidth="800.0" VBox.vgrow="ALWAYS" />
             </StackPane>
             <Button layoutX="367.0" layoutY="534.0" onAction="#refreshNotices" text="Refresh" />
         </AnchorPane>
@@ -223,5 +213,29 @@
                 </VBox>
             </Tab>
         </TabPane>
+        <graphic>
+            <FontAwesomeIconView glyphName="BELL" />
+        </graphic>
+    </Tab>
+    <Tab fx:id="aiTab" text="AI helper">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <VBox layoutX="97.0" layoutY="7.0" prefHeight="557.0" prefWidth="685.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <TextField fx:id="inputField" prefHeight="26.0" prefWidth="623.0" promptText="Ask your question">
+               <VBox.margin>
+                  <Insets bottom="20.0" left="50.0" right="50.0" top="10.0" />
+               </VBox.margin></TextField>
+                <Button onAction="#getAnswer" text="Get Answer">
+               <VBox.margin>
+                  <Insets left="360.0" />
+               </VBox.margin></Button>
+                <TextArea fx:id="outputArea" prefHeight="520.0" prefWidth="800.0" promptText="Answers will be generate here">
+               <padding>
+                  <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+               </padding></TextArea>
+            </VBox>
+        </AnchorPane>
+        <graphic>
+            <FontAwesomeIconView glyphName="LAPTOP" />
+        </graphic>
     </Tab>
 </TabPane>
