@@ -16,7 +16,7 @@ module com.example.aoopproject {
     opens com.example.aoopproject.controllers.student to javafx.fxml;
     opens com.example.aoopproject.Instructor to javafx.graphics, javafx.fxml;
     opens com.example.aoopproject.views to javafx.fxml;
-    opens com.example.aoopproject.models to javafx.fxml;
+    opens com.example.aoopproject.models to javafx.base, javafx.fxml, javafx.graphics;
 
     exports com.example.aoopproject;
     exports com.example.aoopproject.controllers;
@@ -26,5 +26,4 @@ module com.example.aoopproject {
     exports com.example.aoopproject.views;
     exports com.example.aoopproject.Instructor;
     exports com.example.aoopproject.database;
-
 }
