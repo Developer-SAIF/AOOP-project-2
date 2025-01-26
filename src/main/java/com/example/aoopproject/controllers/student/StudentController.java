@@ -3,6 +3,9 @@ package com.example.aoopproject.controllers.student;
 import com.example.aoopproject.database.DatabaseConnection;
 import com.example.aoopproject.models.*;
 import com.example.aoopproject.services.MessagePollingService;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXDatePicker;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -75,6 +78,7 @@ public class StudentController implements Initializable {
     private DatePicker examCalendar;
     @FXML
     private ListView<String> scheduledExamsListView;
+
     @FXML
     private CalendarView calendarView;
 
@@ -101,8 +105,8 @@ public class StudentController implements Initializable {
             // AI helper initialization
             initializeAiHelper();
 
-            //initialize Calendar View
-            initializeCalenderView();
+//            //initialize Calendar View
+//            initializeCalenderView();
 
             //initialize participate tab;
             loadExamStartToTab();
@@ -372,10 +376,10 @@ public class StudentController implements Initializable {
     public Tab journalTab;
 
     @FXML
-    private DatePicker datePicker;
+    private MFXDatePicker datePicker;
 
     @FXML
-    private TextArea journalTextArea;
+    private MFXTextField journalTextArea;
 
     @FXML
     private ListView<JournalEntry> journalListView;
@@ -851,7 +855,7 @@ public class StudentController implements Initializable {
     private TextField linkNameField;
 
     @FXML
-    private Button addLinkButton;
+    private MFXButton addLinkButton;
 
     @FXML
     private ListView<SharedFile> filesListView;
@@ -965,7 +969,7 @@ public class StudentController implements Initializable {
 
     // File sharing tab controller ends here
 
-    //Exam Tab controller starts here
+    // Exam Tab controller starts here
 
     @FXML
     public Tab examTab;
@@ -1036,7 +1040,6 @@ public class StudentController implements Initializable {
         }
     }
 
-    // Database methods remain the same as in the original class
     private LocalDateTime getNextExamDateFromDatabase() {
         String query = """
             SELECT examDate 
@@ -1060,7 +1063,7 @@ public class StudentController implements Initializable {
             e.printStackTrace();
         }
 
-        return null; // Return null if no future exams found or in case of error
+        return null;
     }
 
     private ObservableList<XYChart.Data<Number, Number>> getPerformanceData() {
@@ -1198,7 +1201,7 @@ public class StudentController implements Initializable {
     private static final String API_KEY = "8d10c4c7-b397-47b6-8fe2-0533b1c2725c";
 
     @FXML
-    private TextField inputField;
+    private MFXTextField inputField;
 
     @FXML
     private TextArea outputArea;
