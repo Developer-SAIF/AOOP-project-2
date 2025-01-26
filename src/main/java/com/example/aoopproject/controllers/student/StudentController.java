@@ -1,11 +1,10 @@
 package com.example.aoopproject.controllers.student;
 
 import com.example.aoopproject.database.DatabaseConnection;
-import com.example.aoopproject.database.LocalDatabaseConnection;
-import com.example.aoopproject.models.SharedFile;
-import com.example.aoopproject.models.User;
-import com.example.aoopproject.models.UserSession;
+import com.example.aoopproject.models.*;
 import com.example.aoopproject.services.MessagePollingService;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,8 +19,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,11 +35,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,7 +47,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.example.aoopproject.models.Message;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -74,14 +69,140 @@ public class StudentController implements Initializable {
 
     @FXML
     public Tab notificationsTab;
+    public Tab aiTab;
 
     @FXML
+    private DatePicker examCalendar;
+    @FXML
+    private ListView<String> scheduledExamsListView;
+    @FXML
+    private CalendarView calendarView;
+
+
+    @FXML
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            // Initialize all exam-related components first
+            initializeExamComponents();
 
-        // Journal part starts here
+            // Journal initialization
+            initializeJournalComponents();
 
+            // Notice initialization
+            initializeNoticeComponents();
+
+            // Message initialization
+            initializeMessaging();
+
+            // File sharing initialization
+            initializeFileSharingComponents();
+
+            // AI helper initialization
+            initializeAiHelper();
+
+            //initialize Calendar View
+            initializeCalenderView();
+
+        } catch (Exception e) {
+            System.err.println("Error during initialization: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void initializeExamComponents() {
+        // Initialize exam tab components with null checks
+        if (mainTabPane != null) {
+            mainTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+        }
+
+        // Initialize welcome labels
+        if (welcomeLabel != null) {
+            welcomeLabel.setText("Welcome, " + UserSession.getInstance().getUserId());
+        }
+        if (nameLabel != null) {
+            nameLabel.setText(getUserNickname());
+        }
+        if (gradeLabel != null) {
+            gradeLabel.setText("Current Grade: " + calculateCurrentGrade());
+        }
+
+        // Initialize performance chart
+        if (performanceChart != null) {
+            setupPerformanceChart();
+        }
+
+        // Initialize list views with null checks
+        if (availableExamsListView != null) {
+            availableExamsListView.setItems(getAvailableExams());
+            setupExamListViewCellFactory();
+        }
+
+        if (previousResultsListView != null) {
+            previousResultsListView.setItems(getPreviousResults());
+        }
+
+        if (achievementsListView != null) {
+            achievementsListView.setItems(getAchievements());
+        }
+
+        // Setup countdown timer
+        setupExamCountdown();
+
+        // Setup motivational quote
+        setupMotivationalQuote();
+    }
+
+    private void setupExamListViewCellFactory() {
+        availableExamsListView.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    HBox container = new HBox(10);
+                    Label examLabel = new Label(item);
+                    Button registerButton = new Button("Register");
+
+                    ExamRegistrationHandler handler = new ExamRegistrationHandler();
+                    registerButton.setOnAction(e -> handler.handleExamRegistration(item));
+
+                    container.getChildren().addAll(examLabel, registerButton);
+                    setGraphic(container);
+                }
+            }
+        });
+}
+
+    private void setupExamCountdown() {
+        if (countdownLabel != null) {
+            Timeline examCountdown = new Timeline(
+                new KeyFrame(Duration.seconds(1), e -> updateNextExamLabel())
+            );
+            examCountdown.setCycleCount(Timeline.INDEFINITE);
+            examCountdown.play();
+        }
+    }
+
+    private void setupMotivationalQuote() {
+        if (quoteLabel != null) {
+            String[] quotes = {
+                "Study hard what interests you the most in the most undisciplined, irreverent and original manner possible.",
+                "The expert in anything was once a beginner.",
+                "Success is not final, failure is not fatal: it is the courage to continue that counts."
+            };
+            Random random = new Random();
+            quoteLabel.setText(quotes[random.nextInt(quotes.length)]);
+        }
+    }
+
+    private void initializeJournalComponents() {
         journalEntries = FXCollections.observableArrayList();
-        journalListView.setItems(journalEntries);
+        if (journalListView != null) {
+            journalListView.setItems(journalEntries);
+        }
 
         try {
             String userHome = System.getProperty("user.home");
@@ -93,56 +214,153 @@ public class StudentController implements Initializable {
 
             if (!Files.exists(journalsFilePath)) {
                 Files.createFile(journalsFilePath);
-                Files.writeString(journalsFilePath, "[]"); // Initialize with an empty JSON array
-                System.out.println("Created new journals.json file at: " + journalsFilePath); // Log the creation
+                Files.writeString(journalsFilePath, "[]");
             }
             loadJournals();
-
         } catch (IOException e) {
             System.err.println("Error creating or loading journals: " + e.getMessage());
         }
+    }
 
-        // Journal part ends here
-
-        // Notice part starts here
-
+    private void initializeNoticeComponents() {
         notices = FXCollections.observableArrayList();
-        noticeListView.setItems(notices);
+        if (noticeListView != null) {
+            noticeListView.setItems(notices);
+        }
 
         loadingIndicator = new ProgressIndicator();
         loadingIndicator.setMaxSize(50, 50);
 
         refreshNotices();
+    }
 
-        // Notice part ends here
-
-        // Message part starts here
-        initializeMessaging();
-        // Message part ends here
-
-        // File sharing part starts here
-
+    private void initializeFileSharingComponents() {
         setupListView();
         loadFiles();
         setupAddLinkButton();
+    }
 
-        // File sharing part ends here
+    private void initializeAiHelper() {
+        if (outputArea != null) {
+            outputArea.setWrapText(true);
+            outputArea.setEditable(false);
+        }
+    }
 
-        // Exam part start here
-        setupHomeTab();
-        setupExamsTab();
-        setupResultsTab();
-        setupPerformanceChart();
+    public void initializeCalenderView() {
+        calendarView = new CalendarView();
+        //calendarContainer.getChildren().add(calendarView);
 
-        //Exam part ends here
+    }
+
+    private String calculateCurrentGrade() {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT AVG(score) as average_score FROM responses WHERE userID = ?")) {
+
+            stmt.setString(1, UserSession.getInstance().getUserId());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                double avgScore = rs.getDouble("average_score");
+                return String.format("%.1f%%", avgScore);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error calculating grade: " + e.getMessage());
+        }
+        return "N/A";
+    }
+
+    private String getUserNickname() {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT Nickname FROM Users WHERE ID = ?")) {
+
+            stmt.setString(1, UserSession.getInstance().getUserId());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("Nickname");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching user nickname: " + e.getMessage());
+        }
+        return "Student";
+    }
 
 
-        // Ai helper part starts here
+    public class ExamRegistrationHandler {
 
-        outputArea.setWrapText(true);
-        outputArea.setEditable(false);
+        private boolean isAlreadyRegistered(String examInfo) throws SQLException {
+            String query = "SELECT COUNT(*) FROM exam_registrations WHERE student_id = ? AND exam_info = ?";
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        // Ai helper part ends here
+                // Convert String ID to Integer if needed, or use setString if keeping as string
+                stmt.setString(1, UserSession.getInstance().getUserId());
+                stmt.setString(2, examInfo);
+
+                ResultSet rs = stmt.executeQuery();
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+
+        private void registerStudentForExam(String examInfo) throws SQLException {
+            String query = "INSERT INTO exam_registrations (student_id, exam_info, registration_date) VALUES (?, ?, ?)";
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+                // Convert String ID to Integer if needed, or use setString if keeping as string
+                stmt.setString(1, UserSession.getInstance().getUserId());
+                stmt.setString(2, examInfo);
+                stmt.setTimestamp(3, Timestamp.from(Instant.now()));
+
+                stmt.executeUpdate();
+            }
+        }
+
+        public void handleExamRegistration(String examInfo) {
+            try {
+                if (isAlreadyRegistered(examInfo)) {
+                    showAlert(
+                            Alert.AlertType.WARNING,
+                            "Already Registered",
+                            "You are already registered for this exam: " + examInfo
+                    );
+                    return;
+                }
+
+                Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmAlert.setTitle("Exam Registration");
+                confirmAlert.setHeaderText("Register for Exam");
+                confirmAlert.setContentText("Do you want to register for: " + examInfo);
+
+                Optional<ButtonType> result = confirmAlert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    registerStudentForExam(examInfo);
+                    showAlert(
+                            Alert.AlertType.INFORMATION,
+                            "Registration Successful",
+                            "You have been successfully registered for: " + examInfo
+                    );
+                }
+            } catch (SQLException e) {
+                showAlert(
+                        Alert.AlertType.ERROR,
+                        "Registration Error",
+                        "An error occurred while registering for the exam: " + e.getMessage()
+                );
+                e.printStackTrace();
+            }
+        }
+
+        private void showAlert(Alert.AlertType alertType, String title, String content) {
+            Alert alert = new Alert(alertType);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(content);
+            alert.showAndWait();
+        }
     }
 
     // Journal tab controller starts here
@@ -760,21 +978,7 @@ public class StudentController implements Initializable {
     @FXML private ListView<String> availableExamsListView;
     @FXML private ListView<String> previousResultsListView;
 
-    private void setupResultsTab() {
 
-    }
-
-    private void setupHomeTab() {
-        nameLabel.setText("John Doe");
-        gradeLabel.setText("Grade: 10");
-        updateNextExamLabel();
-        achievementsListView.setItems(getAchievements());
-        announcementsListView.setItems(getAnnouncements());
-    }
-
-    private void setupExamsTab() {
-        availableExamsListView.setItems(getAvailableExams());
-    }
 
     private ObservableList<String> getPreviousResults() {
         ObservableList<String> results = FXCollections.observableArrayList();
@@ -838,7 +1042,7 @@ public class StudentController implements Initializable {
             ORDER BY examDate ASC 
             LIMIT 1""";
 
-        try (Connection conn = LocalDatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             ResultSet rs = stmt.executeQuery();
@@ -870,7 +1074,7 @@ public class StudentController implements Initializable {
             GROUP BY e.examID
             ORDER BY e.examID""";
 
-        try (Connection conn = LocalDatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Get current user's ID from UserSession
@@ -918,7 +1122,7 @@ public class StudentController implements Initializable {
         ORDER BY e.examDate ASC
     """;
 
-        try (Connection conn = LocalDatabaseConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Get current student's ID from UserSession
@@ -943,18 +1147,9 @@ public class StudentController implements Initializable {
         return availableExams;
     }
 
-    private ObservableList<String> getAnnouncements() {
-        // Implementation remains the same
-        return FXCollections.observableArrayList();
-    }
-
     private ObservableList<String> getAchievements() {
         // Implementation remains the same
         return FXCollections.observableArrayList();
-    }
-
-    private int getCurrentStudentID() {
-        return 1; // Example student ID
     }
 
     // ExamController ends here

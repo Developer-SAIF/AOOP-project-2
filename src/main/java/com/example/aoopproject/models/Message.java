@@ -15,23 +15,19 @@ public class Message {
     private LocalDateTime timestamp;
     private boolean read;
 
-    public String getSenderId ()
-    {
+    public String getSenderId() {
         return senderId;
     }
 
-    public String getReceiverId ()
-    {
+    public String getReceiverId() {
         return receiverId;
     }
 
-    public String getContent ()
-    {
+    public String getContent() {
         return content;
     }
 
-    public LocalDateTime getTimestamp()
-    {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
@@ -111,24 +107,28 @@ public class Message {
                 message.timestamp = rs.getTimestamp("timestamp").toLocalDateTime();
                 message.read = rs.getBoolean("is_read");
                 messages.add(message);
-
-                // Mark message as read
-                markMessageAsRead(message.id);
             }
+
+            // Mark all retrieved messages as read in a batch update
+            markMessagesAsRead(messages);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return messages;
     }
 
-    private static void markMessageAsRead(int messageId) {
+    private static void markMessagesAsRead(List<Message> messages) {
         String sql = "UPDATE messages SET is_read = true WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, messageId);
-            pstmt.executeUpdate();
+            for (Message message : messages) {
+                pstmt.setInt(1, message.id);
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
         }

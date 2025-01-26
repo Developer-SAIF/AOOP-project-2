@@ -1,6 +1,6 @@
 package com.example.aoopproject.Instructor;
 
-import com.example.onlineexamsystem.Instructor.Model.ManageSubjects;
+import com.example.aoopproject.models.ManageSubjects;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

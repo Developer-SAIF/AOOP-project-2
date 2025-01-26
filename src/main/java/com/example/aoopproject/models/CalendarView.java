@@ -1,42 +1,64 @@
 package com.example.aoopproject.models;
 
-import com.example.aoopproject.database.LocalDatabaseConnection;
+import com.example.aoopproject.database.DatabaseConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.*;
+import java.sql.Date;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 
 public class CalendarView extends VBox {
 
     private YearMonth currentYearMonth;
-    private ArrayList<Button> dayButtons;
-    private Map<LocalDate, List<com.example.onlineexamsystem.Student.Event>> events;
+    private List<Button> dayButtons;
+    private Map<LocalDate, List<Event>> events;
     private LocalDate selectedDate;
+    private ObservableList<String> examItems;
+    private ListView<String> scheduledExamsListView;
 
     public CalendarView() {
         currentYearMonth = YearMonth.now();
         dayButtons = new ArrayList<>();
         events = new HashMap<>();
+        examItems = FXCollections.observableArrayList();
 
         // Load events from MySQL
         loadEvents();
 
         // Create the calendar layout
+        GridPane calendarGrid = createCalendarGrid();
+        updateCalendar();
+
+        // Add title and navigation buttons
+        HBox navigationBox = createNavigationBox();
+        getChildren().addAll(navigationBox, calendarGrid);
+
+        // Make sure CalendarView grows with the window
+        setVgrow(calendarGrid, Priority.ALWAYS);
+        setVgrow(this, Priority.ALWAYS);
+
+        // Scheduled Exams ListView
+        scheduledExamsListView = new ListView<>(examItems);
+        getChildren().add(scheduledExamsListView);
+
+        // Load scheduled exams initially
+        loadScheduledExams();
+    }
+
+    private GridPane createCalendarGrid() {
         GridPane calendarGrid = new GridPane();
         calendarGrid.setPadding(new Insets(10));
         calendarGrid.setHgap(10);
@@ -53,28 +75,30 @@ public class CalendarView extends VBox {
         // Add day buttons
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
-                Button dayButton = new Button();
-                dayButton.setPrefSize(40, 40);
+                Button dayButton = createDayButton();
                 GridPane.setConstraints(dayButton, j, i + 1);
                 calendarGrid.getChildren().add(dayButton);
                 dayButtons.add(dayButton);
-
-                int finalI = i;
-                int finalJ = j;
-                dayButton.setOnAction(e -> {
-                    if (!dayButton.getText().isEmpty()) {
-                        int day = Integer.parseInt(dayButton.getText());
-                        selectedDate = currentYearMonth.atDay(day);
-                        showEventDialog(selectedDate);
-                    }
-                });
             }
         }
+        return calendarGrid;
+    }
 
-        // Update calendar
-        updateCalendar();
+    private Button createDayButton() {
+        Button dayButton = new Button();
+        dayButton.setPrefSize(40, 40);
 
-        // Add title and calendar grid to layout
+        dayButton.setOnAction(e -> {
+            if (!dayButton.getText().isEmpty()) {
+                int day = Integer.parseInt(dayButton.getText());
+                selectedDate = currentYearMonth.atDay(day);
+                showEventDialog(selectedDate);
+            }
+        });
+        return dayButton;
+    }
+
+    private HBox createNavigationBox() {
         Label titleLabel = new Label();
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: darkblue;");
         updateTitle(titleLabel);
@@ -95,33 +119,35 @@ public class CalendarView extends VBox {
 
         HBox navigationBox = new HBox(10, prevButton, titleLabel, nextButton);
         navigationBox.setPadding(new Insets(10, 0, 10, 0));
+        HBox.setHgrow(prevButton, Priority.ALWAYS); // Allow buttons to grow
+        HBox.setHgrow(titleLabel, Priority.ALWAYS);
+        HBox.setHgrow(nextButton, Priority.ALWAYS);
 
-        getChildren().addAll(navigationBox, calendarGrid);
+        return navigationBox;
     }
 
     private void updateCalendar() {
         LocalDate firstDayOfMonth = currentYearMonth.atDay(1);
-        int dayOfWeek = firstDayOfMonth.getDayOfWeek().getValue() % 7; // Adjust Sunday to 0, Monday to 1, etc.
-        int daysInMonth = currentYearMonth.lengthOfMonth();
+        LocalDate firstDayOfCalendar = firstDayOfMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate lastDayOfCalendar = currentYearMonth.atEndOfMonth().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
 
-        for (Button dayButton : dayButtons) {
-            dayButton.setText("");
-            dayButton.setDisable(true);
-        }
+        dayButtons.forEach(button -> {
+            button.setText("");
+            button.setDisable(true);
+        });
 
-        for (int i = 1; i <= daysInMonth; i++) {
-            LocalDate date = currentYearMonth.atDay(i);
-            int buttonIndex = dayOfWeek + i - 1;
-            if (buttonIndex < dayButtons.size()) {  // Ensure index is within bounds
-                Button dayButton = dayButtons.get(buttonIndex);
-                dayButton.setText(String.valueOf(i));
-                dayButton.setDisable(false);
-                dayButton.setStyle(""); // Reset style
-                if (events.containsKey(date)) {
-                    dayButton.setStyle("-fx-background-color: yellow;");
+        final LocalDate[] dateIterator = {firstDayOfCalendar};
+        dayButtons.forEach(button -> {
+            if (!dateIterator[0].isAfter(lastDayOfCalendar)) {
+                button.setText(String.valueOf(dateIterator[0].getDayOfMonth()));
+                button.setDisable(false);
+                button.setStyle("");
+                if (events.containsKey(dateIterator[0])) {
+                    button.setStyle("-fx-background-color: yellow;");
                 }
+                dateIterator[0] = dateIterator[0].plusDays(1);
             }
-        }
+        });
     }
 
     private void updateTitle(Label titleLabel) {
@@ -139,8 +165,8 @@ public class CalendarView extends VBox {
         ListView<String> eventListView = new ListView<>();
         ObservableList<String> eventItems = FXCollections.observableArrayList();
 
-        List<com.example.onlineexamsystem.Student.Event> eventList = events.getOrDefault(date, new ArrayList<>());
-        for (com.example.onlineexamsystem.Student.Event event : eventList) {
+        List<Event> eventList = events.getOrDefault(date, new ArrayList<>());
+        for (Event event : eventList) {
             eventItems.add(event.getDescription());
         }
         eventListView.setItems(eventItems);
@@ -170,13 +196,13 @@ public class CalendarView extends VBox {
         if (!events.containsKey(date)) {
             events.put(date, new ArrayList<>());
         }
-        com.example.onlineexamsystem.Student.Event newEvent = new com.example.onlineexamsystem.Student.Event(description, date);
+        Event newEvent = new Event(description, date);
         events.get(date).add(newEvent);
         saveEventToDatabase(newEvent);
     }
 
-    private void saveEventToDatabase(com.example.onlineexamsystem.Student.Event event) {
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+    private void saveEventToDatabase(Event event) {
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "INSERT INTO events (event_date, description) VALUES (?, ?)")) {
 
@@ -190,7 +216,7 @@ public class CalendarView extends VBox {
     }
 
     private void loadEvents() {
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "SELECT event_date, description FROM events");
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -198,12 +224,33 @@ public class CalendarView extends VBox {
             while (resultSet.next()) {
                 LocalDate date = resultSet.getDate("event_date").toLocalDate();
                 String description = resultSet.getString("description");
-                events.computeIfAbsent(date, k -> new ArrayList<>()).add(new com.example.onlineexamsystem.Student.Event(description, date));
+                events.computeIfAbsent(date, k -> new ArrayList<>()).add(new Event(description, date));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         updateCalendar();
+    }
+
+    private void loadScheduledExams() {
+        examItems.clear();
+        String query = "SELECT examDate, subjectName FROM examschedules " +
+                "JOIN subjects ON examschedules.subjectID = subjects.subjectID";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                LocalDateTime examDate = resultSet.getTimestamp("examDate").toLocalDateTime();
+                String subjectName = resultSet.getString("subjectName");
+                examItems.add(examDate + ": " + subjectName);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        scheduledExamsListView.setItems(examItems);
     }
 }

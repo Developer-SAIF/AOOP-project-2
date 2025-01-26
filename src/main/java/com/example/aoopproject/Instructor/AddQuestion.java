@@ -1,6 +1,6 @@
 package com.example.aoopproject.Instructor;
 
-import com.example.aoopproject.database.LocalDatabaseConnection;
+import com.example.aoopproject.database.DatabaseConnection;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -134,9 +134,9 @@ public class AddQuestion extends Application {
 
     private ObservableList<String> getSubjectsFromDatabase() {
         ObservableList<String> subjects = FXCollections.observableArrayList();
-        String query = "SELECT subjectName FROM Subjects";
+        String query = "SELECT subjectName FROM subjects";
 
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
 
@@ -152,8 +152,8 @@ public class AddQuestion extends Application {
     }
 
     private int getSubjectID(String subjectName) {
-        String query = "SELECT subjectID FROM Subjects WHERE LOWER(subjectName) = LOWER(?)";
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        String query = "SELECT subjectID FROM subjects WHERE LOWER(subjectName) = LOWER(?)";
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, subjectName);
@@ -170,9 +170,9 @@ public class AddQuestion extends Application {
     }
 
     private void addQuestionToDatabase(String question, String option1, String option2, String option3, String option4, int correctOption, int subjectID) {
-        String insertSQL = "INSERT INTO ExamQuestions (questionText, option1, option2, option3, option4, correctOption, subjectID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO examquestions (questionText, option1, option2, option3, option4, correctOption, subjectID) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
 
             preparedStatement.setString(1, question);

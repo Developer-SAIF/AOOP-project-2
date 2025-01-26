@@ -1,6 +1,6 @@
 package com.example.aoopproject.models;
 
-import com.example.aoopproject.database.LocalDatabaseConnection;
+import com.example.aoopproject.database.DatabaseConnection;
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -64,7 +64,7 @@ public class ManageSubjects extends Application {
         ObservableList<String> subjects = FXCollections.observableArrayList();
         String query = "SELECT subjectName FROM subjects";
 
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -87,7 +87,7 @@ public class ManageSubjects extends Application {
         }
 
         String query = "INSERT INTO subjects (subjectName) VALUES (?)";
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, subject);
@@ -108,7 +108,7 @@ public class ManageSubjects extends Application {
         }
 
         String query = "DELETE FROM subjects WHERE subjectName = ?";
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, selectedSubject);

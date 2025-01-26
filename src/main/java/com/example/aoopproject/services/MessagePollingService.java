@@ -13,11 +13,11 @@ import java.util.List;
 
 public class MessagePollingService extends ScheduledService<Void> {
     private final StudentController studentController;
-    private static final int POLLING_INTERVAL = 1; // seconds
+    private static final int POLLING_INTERVAL_MS = 100; // milliseconds
 
     public MessagePollingService(StudentController studentController) {
         this.studentController = studentController;
-        this.setPeriod(Duration.seconds(POLLING_INTERVAL));
+        this.setPeriod(Duration.millis(POLLING_INTERVAL_MS));
     }
 
     @Override

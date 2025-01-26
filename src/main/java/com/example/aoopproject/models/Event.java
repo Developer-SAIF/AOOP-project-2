@@ -19,4 +19,3 @@ public class Event {
         return date;
     }
 }
-

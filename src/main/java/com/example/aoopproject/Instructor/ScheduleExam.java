@@ -1,6 +1,6 @@
 package com.example.aoopproject.Instructor;
 
-import com.example.aoopproject.database.LocalDatabaseConnection;
+import com.example.aoopproject.database.DatabaseConnection;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -102,9 +102,9 @@ public class ScheduleExam extends Application {
 
     private ObservableList<String> getSubjectsFromDatabase() {
         ObservableList<String> subjects = FXCollections.observableArrayList();
-        String query = "SELECT subjectName FROM Subjects";
+        String query = "SELECT subjectName FROM subjects";
 
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
 
@@ -120,8 +120,8 @@ public class ScheduleExam extends Application {
     }
 
     private int getSubjectID(String subjectName) {
-        String query = "SELECT subjectID FROM Subjects WHERE LOWER(subjectName) = LOWER(?)";
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        String query = "SELECT subjectID FROM subjects WHERE LOWER(subjectName) = LOWER(?)";
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, subjectName);
@@ -138,14 +138,14 @@ public class ScheduleExam extends Application {
     }
 
     private void scheduleExamInDatabase(int subjectID, LocalDateTime examDate) {
-        String insertSQL = "INSERT INTO ExamSchedules (subjectID, examDate, createdBy) VALUES (?, ?, ?)";
+        String insertSQL = "INSERT INTO examschedules (subjectID, examDate) VALUES (?, ?)";
 
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
 
             preparedStatement.setInt(1, subjectID);
             preparedStatement.setTimestamp(2, Timestamp.valueOf(examDate));
-            preparedStatement.setInt(3, getCurrentInstructorID()); // Use the current instructor ID
+            //preparedStatement.setInt(3,getCurrentInstructorID()); // Use the current instructor ID
 
             preparedStatement.executeUpdate();
             System.out.println("Exam scheduled successfully!");
@@ -155,11 +155,11 @@ public class ScheduleExam extends Application {
         }
     }
 
-    private int getCurrentInstructorID() {
-        // Simulate fetching the current instructor's ID after login
-        // In a real application, this would be replaced by actual authentication logic
-        return 0; // Example instructor ID
-    }
+//    private int getCurrentInstructorID() {
+//        // Simulate fetching the current instructor's ID after login
+//        // In a real application, this would be replaced by actual authentication logic
+//        return 0; // Example instructor ID
+//    }
 
     public static void main(String[] args) {
         launch(args);

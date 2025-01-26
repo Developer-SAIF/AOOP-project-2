@@ -4,16 +4,19 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
-import java.net.BindException;
+
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MessageServer extends WebSocketServer {
     private static final int PORT = 8887;
     private static MessageServer instance;
-    private Map<String, WebSocket> userConnections = new HashMap<>();
-    private Map<WebSocket, String> connectionUsers = new HashMap<>();
+    private final Map<String, WebSocket> userConnections = new HashMap<>();
+    private final Map<WebSocket, String> connectionUsers = new HashMap<>();
+    private final ExecutorService threadPool = Executors.newCachedThreadPool(); // Dynamic thread pool
 
     public static synchronized MessageServer getInstance() {
         if (instance == null) {
@@ -33,31 +36,35 @@ public class MessageServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        String userId = connectionUsers.get(conn);
-        if (userId != null) {
-            userConnections.remove(userId);
-            connectionUsers.remove(conn);
-            broadcastUserStatus(userId, false);
-        }
+        threadPool.submit(() -> {
+            String userId = connectionUsers.get(conn);
+            if (userId != null) {
+                userConnections.remove(userId);
+                connectionUsers.remove(conn);
+                broadcastUserStatus(userId, false);
+            }
+        });
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        try {
-            JSONObject jsonMessage = new JSONObject(message);
-            String type = jsonMessage.getString("type");
+        threadPool.submit(() -> {
+            try {
+                JSONObject jsonMessage = new JSONObject(message);
+                String type = jsonMessage.getString("type");
 
-            switch (type) {
-                case "register":
-                    handleRegistration(conn, jsonMessage);
-                    break;
-                case "message":
-                    handleMessage(jsonMessage);
-                    break;
+                switch (type) {
+                    case "register":
+                        handleRegistration(conn, jsonMessage);
+                        break;
+                    case "message":
+                        handleMessage(jsonMessage);
+                        break;
+                }
+            } catch (Exception e) {
+                System.err.println("Error processing message: " + e.getMessage());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     private void handleRegistration(WebSocket conn, JSONObject jsonMessage) {
@@ -90,7 +97,7 @@ public class MessageServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-
+        System.out.println("Server started successfully.");
     }
 
     public static void main(String[] args) {
@@ -104,6 +111,7 @@ public class MessageServer extends WebSocketServer {
                 System.out.println("Shutting down message server...");
                 try {
                     server.stop();
+                    server.threadPool.shutdown();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

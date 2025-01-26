@@ -1,7 +1,7 @@
 package com.example.aoopproject.Instructor;
 
-import com.example.aoopproject.database.LocalDatabaseConnection;
-import com.example.onlineexamsystem.Instructor.Model.Question;
+import com.example.aoopproject.database.DatabaseConnection;
+import com.example.aoopproject.models.Question;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -81,7 +81,7 @@ public class ViewQuestions extends Application {
         ObservableList<Question> questions = FXCollections.observableArrayList();
         String query = "SELECT Q.questionID, Q.questionText, Q.option1, Q.option2, Q.option3, Q.option4, Q.correctOption, S.subjectName FROM examquestions Q JOIN subjects S ON Q.subjectID = S.subjectID WHERE Q.createdBy = ?";
 
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, 0); // Use the instructor ID 0
@@ -109,7 +109,7 @@ public class ViewQuestions extends Application {
         Question selectedQuestion = table.getSelectionModel().getSelectedItem();
         if (selectedQuestion != null) {
             String query = "DELETE FROM examquestions WHERE questionID = ?";
-            try (Connection connection = LocalDatabaseConnection.getConnection();
+            try (Connection connection = DatabaseConnection.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
                 preparedStatement.setInt(1, selectedQuestion.getQuestionID());
@@ -181,7 +181,7 @@ public class ViewQuestions extends Application {
 
     private void updateQuestion(Question selectedQuestion, TextField editQuestionInput, TextField editOption1Input, TextField editOption2Input, TextField editOption3Input, TextField editOption4Input, TextField editCorrectOptionInput, Stage editWindow) {
         String query = "UPDATE examquestions SET questionText = ?, option1 = ?, option2 = ?, option3 = ?, option4 = ?, correctOption = ? WHERE questionID = ?";
-        try (Connection connection = LocalDatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, editQuestionInput.getText());
