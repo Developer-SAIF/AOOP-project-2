@@ -20,6 +20,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.student.StudentController">
     <cursor>
         <Cursor fx:constant="HAND" />
@@ -175,6 +177,9 @@
                         <ListView fx:id="announcementsListView" />
                     </VBox>
                 </VBox>
+                <graphic>
+                    <FontAwesomeIconView glyphName="PENCIL" />
+                </graphic>
             </Tab>
 
             <!-- Exams Tab -->

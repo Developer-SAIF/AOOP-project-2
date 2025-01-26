@@ -1,6 +1,7 @@
 package com.example.aoopproject.controllers.student;
 
 import com.example.aoopproject.database.DatabaseConnection;
+import com.example.aoopproject.database.LocalDatabaseConnection;
 import com.example.aoopproject.models.SharedFile;
 import com.example.aoopproject.models.User;
 import com.example.aoopproject.models.UserSession;
@@ -10,6 +11,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
@@ -24,9 +28,11 @@ import org.json.JSONObject;
 import javafx.scene.control.TextArea;
 import java.awt.Desktop;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +44,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.jsoup.Jsoup;
@@ -753,6 +760,10 @@ public class StudentController implements Initializable {
     @FXML private ListView<String> availableExamsListView;
     @FXML private ListView<String> previousResultsListView;
 
+    private void setupResultsTab() {
+
+    }
+
     private void setupHomeTab() {
         nameLabel.setText("John Doe");
         gradeLabel.setText("Grade: 10");
@@ -765,8 +776,33 @@ public class StudentController implements Initializable {
         availableExamsListView.setItems(getAvailableExams());
     }
 
-    private void setupResultsTab() {
-        previousResultsListView.setItems(getPreviousResults());
+    private ObservableList<String> getPreviousResults() {
+        ObservableList<String> results = FXCollections.observableArrayList();
+        String query = "SELECT E.examDate, S.subjectName, R.score FROM responses R " +
+                "JOIN exams E ON R.examID = E.examID " +
+                "JOIN subjects S ON E.subjectID = S.subjectID " +
+                "WHERE R.userID = ? ORDER BY E.examDate DESC";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            // Replace 1 with the actual student userID
+            preparedStatement.setInt(1, 1);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                LocalDateTime examDate = resultSet.getTimestamp("examDate").toLocalDateTime();
+                String subjectName = resultSet.getString("subjectName");
+                int score = resultSet.getInt("score");
+
+                results.add(String.format("Date: %s, Subject: %s, Score: %d", examDate, subjectName, score));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return results;
     }
 
     private void setupPerformanceChart() {
@@ -795,23 +831,116 @@ public class StudentController implements Initializable {
 
     // Database methods remain the same as in the original class
     private LocalDateTime getNextExamDateFromDatabase() {
-        // Implementation remains the same
-        return null;
+        String query = """
+            SELECT examDate 
+            FROM examschedules 
+            WHERE examDate > NOW() 
+            ORDER BY examDate ASC 
+            LIMIT 1""";
+
+        try (Connection conn = LocalDatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Convert SQL timestamp to LocalDateTime
+                return rs.getTimestamp("examDate").toLocalDateTime();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching next exam date: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null; // Return null if no future exams found or in case of error
     }
 
     private ObservableList<XYChart.Data<Number, Number>> getPerformanceData() {
-        // Implementation remains the same
-        return FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Number, Number>> performanceData = FXCollections.observableArrayList();
+
+        String query = """
+            SELECT e.examID, 
+                   SUM(r.score) as totalScore,
+                   COUNT(DISTINCT q.questionID) as totalQuestions
+            FROM responses r
+            JOIN exams e ON r.examID = e.examID
+            JOIN examquestions q ON r.questionID = q.questionID
+            WHERE r.userID = ?
+            GROUP BY e.examID
+            ORDER BY e.examID""";
+
+        try (Connection conn = LocalDatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Get current user's ID from UserSession
+            int currentUserId = Integer.parseInt(UserSession.getInstance().getUserId());
+            stmt.setInt(1, currentUserId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            int examCount = 1; // X-axis counter
+            while (rs.next()) {
+                int totalScore = rs.getInt("totalScore");
+                int totalQuestions = rs.getInt("totalQuestions");
+
+                // Calculate percentage score
+                double percentageScore = (totalQuestions > 0)
+                        ? ((double) totalScore / totalQuestions) * 100
+                        : 0.0;
+
+                // Add data point (exam number, percentage score)
+                performanceData.add(new XYChart.Data<>(examCount++, percentageScore));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching performance data: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return performanceData;
     }
 
     private ObservableList<String> getAvailableExams() {
-        // Implementation remains the same
-        return FXCollections.observableArrayList();
-    }
+        ObservableList<String> availableExams = FXCollections.observableArrayList();
 
-    private ObservableList<String> getPreviousResults() {
-        // Implementation remains the same
-        return FXCollections.observableArrayList();
+        String query = """
+        SELECT e.examID, e.examDate, s.subjectName
+        FROM examschedules e
+        JOIN subjects s ON e.subjectID = s.subjectID
+        WHERE e.examDate > NOW()
+        AND e.examID NOT IN (
+            -- Exclude exams already taken by the student
+            SELECT examID 
+            FROM responses 
+            WHERE userID = ?
+        )
+        ORDER BY e.examDate ASC
+    """;
+
+        try (Connection conn = LocalDatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Get current student's ID from UserSession
+            stmt.setString(1, UserSession.getInstance().getUserId());
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String examInfo = String.format("%s - %s",
+                        rs.getString("subjectName"),
+                        rs.getTimestamp("examDate").toLocalDateTime()
+                                .format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"))
+                );
+                availableExams.add(examInfo);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Optionally add an error message to the list
+            availableExams.add("Error loading available exams");
+        }
+
+        return availableExams;
     }
 
     private ObservableList<String> getAnnouncements() {
