@@ -1,5 +1,6 @@
 package com.example.aoopproject.controllers.student;
 
+import com.example.aoopproject.FileUpload.*;
 import com.example.aoopproject.database.DatabaseConnection;
 import com.example.aoopproject.models.*;
 import com.example.aoopproject.services.MessagePollingService;
@@ -8,7 +9,9 @@ import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,7 +22,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONArray;
@@ -110,6 +116,9 @@ public class StudentController implements Initializable {
 
             //initialize participate tab;
             loadExamStartToTab();
+
+            // file initialize
+            fileinitialize();
 
         } catch (Exception e) {
             System.err.println("Error during initialization: " + e.getMessage());
@@ -369,6 +378,8 @@ public class StudentController implements Initializable {
             alert.showAndWait();
         }
     }
+
+
 
     // Journal tab controller starts here
 
@@ -1296,4 +1307,226 @@ public class StudentController implements Initializable {
     }
 
     // Ai helper tab controller ends here
+
+    // File sharing Controller starts here
+
+    @FXML
+    private TableView<FileDetails> fileTable;
+    @FXML
+    private TableColumn<FileDetails, String> fileNameColumn;
+    @FXML
+    private TableColumn<FileDetails, String> uploadTimeColumn;
+    @FXML
+    private TableColumn<FileDetails, String> fileSizeColumn;
+    @FXML
+    private TableColumn<FileDetails, String> downloadColumn;
+    @FXML
+    private TableColumn<FileDetails, String> openColumn;
+    private Path tempDir;
+    private HostServices hostServices;
+
+    private ObservableList<FileDetails> fileData;
+
+    private static final String UPLOAD_DIRECTORY = "uploaded_files";
+
+    private FileServer fileServer;
+    private FileClient fileClient;
+    private String serverAddress = "localhost";
+
+    public void fileinitialize() {
+        FilePathHandler.ensureServerDirectoryExists();
+
+        fileData = FXCollections.observableArrayList(DatabaseHandler.getFiles());
+        fileTable.getSortOrder().add(uploadTimeColumn);
+
+        fileServer = new FileServer();
+        new Thread(() -> fileServer.start()).start();
+        fileClient = new FileClient(serverAddress);
+
+        fileNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
+        uploadTimeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUploadTime().toString()));
+        fileSizeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSize()));
+
+        downloadColumn.setCellFactory(col -> {
+            return new TableCell<>() {
+                private final Button downloadButton = new Button("Download");
+
+                {
+                    downloadButton.setOnAction(e -> {
+                        FileDetails file = getTableView().getItems().get(getIndex());
+                        System.out.println("Downloading file: " + file.getPath());
+                        downloadFile(file);
+                    });
+                }
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(downloadButton);
+                    }
+                }
+            };
+        });
+
+        fileNameColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String fileName, boolean empty) {
+                super.updateItem(fileName, empty);
+                if (empty || fileName == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Label fileLabel = new Label(fileName);
+                    if (fileName.toLowerCase().endsWith(".pdf")) {
+                        ImageView pdfIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/PDF_file_icon.svg.png")));
+                        pdfIcon.setFitHeight(16);
+                        pdfIcon.setFitWidth(16);
+                        fileLabel.setGraphic(pdfIcon);
+                    }
+                    setGraphic(fileLabel);
+                }
+            }
+        });
+
+        fileTable.setItems(fileData);
+
+        try {
+            tempDir = Files.createTempDirectory("note_sharing_temp");
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    Files.walk(tempDir)
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error",
+                    "Failed to initialize temporary directory: " + e.getMessage());
+        }
+
+        openColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button openButton = new Button("Open");
+
+            {
+                openButton.setOnAction(event -> {
+                    FileDetails file = getTableView().getItems().get(getIndex());
+                    openFile(file);
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(openButton);
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void chooseAndUploadFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose File to Upload");
+        File selectedFile = fileChooser.showOpenDialog(fileTable.getScene().getWindow());
+
+        if (selectedFile != null) {
+            try {
+                fileClient.uploadFile(selectedFile.toPath());
+
+                FileDetails newFile = new FileDetails(
+                        selectedFile.getName(),
+                        selectedFile.getPath(),
+                        String.valueOf(selectedFile.length()),
+                        LocalDateTime.now()
+                );
+
+                DatabaseHandler.addFile(newFile);
+                fileData.add(newFile);
+
+                fileTable.getSortOrder().clear();
+                fileTable.getSortOrder().add(uploadTimeColumn);
+                uploadTimeColumn.setSortType(TableColumn.SortType.DESCENDING);
+                fileTable.sort();
+
+                showAlert(Alert.AlertType.INFORMATION, "Success", "File uploaded successfully!");
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to upload file: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void downloadFile(FileDetails fileDetails) {
+        try {
+            FilePathHandler.debugPrintFilePaths();
+            Path downloadsPath = Path.of(System.getProperty("user.home"), "Downloads", fileDetails.getName());
+
+            fileClient.downloadFile(fileDetails.getName(), downloadsPath);
+
+            showAlert(Alert.AlertType.INFORMATION, "Success",
+                    "File downloaded successfully to: " + downloadsPath.toAbsolutePath());
+
+        } catch (IOException | ClassNotFoundException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to download file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void openFile(FileDetails fileDetails) {
+        try {
+            Path tempFile = tempDir.resolve(fileDetails.getName());
+            fileClient.downloadFile(fileDetails.getName(), tempFile);
+
+            if (hostServices != null) {
+                hostServices.showDocument(tempFile.toUri().toString());
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error",
+                        "Unable to open file: HostServices not initialized");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            showAlert(Alert.AlertType.ERROR, "Error",
+                    "Failed to open file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
+    public void stop() {
+        if (fileServer != null) {
+            fileServer.stop();
+        }
+
+        try {
+            if (tempDir != null) {
+                Files.walk(tempDir)
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
