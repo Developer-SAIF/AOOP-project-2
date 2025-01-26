@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
@@ -11,62 +12,65 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.aoopproject.controllers.DeleteUserController">
-    <ImageView fitHeight="601.0" fitWidth="400.0" layoutX="49.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true"
-               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="400.0"
-               AnchorPane.topAnchor="0.0">
-        <Image url="@../images/Login_page.jpg"/>
+<AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="800.0" style="-fx-border-color: #F4CE14; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aoopproject.controllers.DeleteUserController">
+    <ImageView fitHeight="601.0" fitWidth="400.0" layoutX="49.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="400.0" AnchorPane.topAnchor="0.0">
+        <Image url="@../images/Login_page.jpg" />
     </ImageView>
-    <Pane layoutX="215.0" layoutY="137.0" prefHeight="187.0" prefWidth="221.0" style="-fx-background-color: #E4F9F5;"
-          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0"
-          AnchorPane.topAnchor="0.0">
-        <Label layoutX="79.0" layoutY="57.0" prefHeight="40.0" prefWidth="226.0" text="Delete your account"
-               textFill="#40514e">
+    <Pane layoutX="215.0" layoutY="137.0" prefHeight="187.0" prefWidth="221.0" style="-fx-background-color: #F5F7F8;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Label layoutX="79.0" layoutY="39.0" prefHeight="40.0" prefWidth="226.0" text="Delete your account" textFill="#45474b">
             <font>
-                <Font name="Arial Bold" size="20.0"/>
+                <Font name="Arial Bold" size="20.0" />
             </font>
         </Label>
-        <MFXTextField fx:id="userIdField" floatMode="BORDER" floatingText="User ID" layoutX="70.0" layoutY="116.0"
-                      prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #30E3CA;">
+        <MFXTextField fx:id="userIdField" floatMode="ABOVE" floatingText="User ID" layoutX="70.0" layoutY="120.0" prefHeight="40.0" prefWidth="250.0">
             <font>
-                <Font size="14.0"/>
+                <Font size="14.0" />
             </font>
             <textFill>
-                <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987"
-                       opacity="0.8700000047683716"/>
+                <Color red="0.2705882489681244" green="0.27843138575553894" blue="0.29411765933036804" opacity="0.8700000047683716" />
             </textFill>
         </MFXTextField>
-        <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatMode="BORDER" floatingText="Password"
-                          layoutX="70.0" layoutY="177.0" prefHeight="40.0" prefWidth="250.0"
-                          style="-fx-border-color: #30E3CA;">
+        <MFXPasswordField fx:id="passwordField" borderGap="5.0" floatMode="ABOVE" floatingText="Password" layoutX="70.0" layoutY="189.0" prefHeight="40.0" prefWidth="250.0">
             <font>
-                <Font size="14.0"/>
+                <Font size="14.0" />
             </font>
             <textFill>
-                <Color red="0.250980406999588" green="0.3176470696926117" blue="0.30588236451148987"
-                       opacity="0.8700000047683716"/>
+                <Color red="0.2705882489681244" green="0.27843138575553894" blue="0.29411765933036804" opacity="0.8700000047683716" />
             </textFill>
         </MFXPasswordField>
-        <MFXButton fx:id="backButton" layoutX="218.0" layoutY="247.0" onAction="#handleBackButtonAction"
-                   prefHeight="30.0" prefWidth="100.0" rippleAnimateBackground="false" rippleColor="WHITE"
-                   style="-fx-background-color: #30E3CA;" text="Back" textFill="#40514e">
+        <MFXButton fx:id="backButton" layoutX="243.0" layoutY="247.0" onAction="#handleBackButtonAction" prefHeight="30.0" prefWidth="75.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #F4CE14;" text="Back" textFill="#45464a">
             <font>
-                <Font name="Arial" size="14.0"/>
+                <Font name="Arial" size="14.0" />
             </font>
+         <graphic>
+            <FontAwesomeIconView glyphName="CHEVRON_LEFT" />
+         </graphic>
         </MFXButton>
-        <Label fx:id="statusLabel" layoutX="76.0" layoutY="297.0" style="-fx-visibility: hidden" text="Status">
+        <Label fx:id="statusLabel" layoutX="76.0" layoutY="297.0" style="-fx-visibility: hidden" text="Status" textFill="#45474b">
             <font>
-                <Font size="14.0"/>
+                <Font size="14.0" />
             </font>
         </Label>
-        <MFXButton fx:id="deleteUserButton" layoutX="70.0" layoutY="247.0" onAction="#handleDeleteButtonAction"
-                   prefHeight="30.0" prefWidth="131.0" rippleAnimateBackground="false" rippleColor="WHITE"
-                   style="-fx-background-color: #30E3CA;" text="Delete this user" textFill="#40514e">
+        <MFXButton fx:id="deleteUserButton" layoutX="70.0" layoutY="247.0" onAction="#handleDeleteButtonAction" prefHeight="30.0" prefWidth="151.0" rippleAnimateBackground="false" rippleColor="WHITE" style="-fx-background-color: #F4CE14;" text="Delete this user" textFill="#45474b">
             <font>
-                <Font name="Arial" size="14.0"/>
+                <Font name="Arial" size="14.0" />
             </font>
+         <graphic>
+            <FontAwesomeIconView glyphName="CHECK" />
+         </graphic>
         </MFXButton>
     </Pane>
+   <Label layoutX="21.0" layoutY="22.0" prefHeight="55.0" prefWidth="356.0" text="Study Manager" textFill="#45474b">
+      <font>
+         <Font name="Arial Black" size="37.0" />
+      </font>
+      <graphic>
+         <FontAwesomeIconView fill="#45474b" glyphName="BOOK" text="" />
+      </graphic>
+   </Label>
+   <Label fx:id="quoteLabel" layoutX="21.0" layoutY="71.0" prefHeight="121.0" prefWidth="342.0" text="Chase your dream..." textFill="#45474b" textOverrun="CLIP" wrapText="true">
+      <font>
+         <Font name="System Bold Italic" size="18.0" />
+      </font>
+   </Label>
 </AnchorPane>
