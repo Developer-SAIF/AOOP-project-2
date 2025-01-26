@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
@@ -7,12 +6,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
-
 <?import com.example.aoopproject.models.CalendarView?>
+
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
          prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="com.example.aoopproject.controllers.student.StudentController">
+
     <cursor>
         <Cursor fx:constant="HAND" />
     </cursor>
@@ -118,7 +118,7 @@
                         <padding>
                             <Insets bottom="20" left="20" right="20" top="20" />
                         </padding>
-                        <!-- Performance Chart Section (from second FXML) -->
+                        <!-- Performance Chart Section -->
                         <VBox spacing="10">
                             <Label text="Performance Overview"
                                    style="-fx-font-size: 18; -fx-font-weight: bold;"/>
@@ -159,10 +159,7 @@
                     <padding>
                         <Insets bottom="20" left="20" right="20" top="20" />
                     </padding>
-                    <!-- Title for the Calendar View -->
                     <Label text="My Calendar" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
-
-                    <!-- Calendar View Section -->
                     <TitledPane text="Calendar" expanded="true">
                         <VBox spacing="10">
                             <CalendarView fx:id="calendarView" VBox.vgrow="ALWAYS"/>
@@ -170,8 +167,25 @@
                     </TitledPane>
                 </VBox>
             </Tab>
-        </TabPane>
 
+            <!-- Participate Exam Tab -->
+            <Tab text="Participate Exam" closable="false">
+                <VBox spacing="20" alignment="CENTER">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                    </padding>
+                    <Label text="Join an Ongoing Exam" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+                    <TableView fx:id="ongoingExamTable">
+                        <columns>
+                            <TableColumn fx:id="examNameParticipateCol" text="Exam Name" />
+                            <TableColumn fx:id="subjectNameParticipateCol" text="Subject" />
+                            <TableColumn fx:id="timeRemainingCol" text="Time Remaining" />
+                            <TableColumn fx:id="joinActionCol" text="Action" />
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+        </TabPane>
     </Tab>
 
     <!-- Q&A Tab -->

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.aoopproject.controllers.student.ExamListController"
+      spacing="10"
+      style="-fx-background-color: white;">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Upcoming Exams"
+           style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+
+    <TableView fx:id="examTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="examNameCol" text="Exam Name" prefWidth="200"/>
+            <TableColumn fx:id="subjectCol" text="Subject" prefWidth="150"/>
+            <TableColumn fx:id="timeCol" text="Time Remaining" prefWidth="150"/>
+            <TableColumn fx:id="actionCol" text="Action" prefWidth="100"/>
+        </columns>
+    </TableView>
+</VBox>

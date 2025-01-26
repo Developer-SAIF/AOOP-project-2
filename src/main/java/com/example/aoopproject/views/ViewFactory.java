@@ -2,15 +2,14 @@ package com.example.aoopproject.views;
 
 import com.example.aoopproject.App;
 import com.example.aoopproject.controllers.admin.AdminController;
+import com.example.aoopproject.controllers.student.ExamController;
 import com.example.aoopproject.controllers.student.StudentController;
-import com.example.aoopproject.models.UserSession;
-import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.WindowEvent;
-import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class ViewFactory {
     private static ViewFactory instance;
@@ -27,16 +26,10 @@ public class ViewFactory {
 
     public void showAdminDashboard(Stage stage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/Admin.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminDashboard.fxml"));
             Scene scene = new Scene(loader.load());
-
             AdminController controller = loader.getController();
-
-            String userNickname = UserSession.getInstance().getNickname();
-            stage.setTitle(userNickname + "'s Dashboard");
-
             stage.setOnCloseRequest(event -> handleWindowClose(event, controller));
-
             stage.setScene(scene);
             stage.setTitle("Admin Dashboard");
         } catch (Exception e) {
@@ -57,7 +50,6 @@ public class ViewFactory {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 stage.close();
-                // Ensure proper application shutdown
                 App.getInstance().stop();
                 System.exit(0);
             }
@@ -67,24 +59,11 @@ public class ViewFactory {
     public void showStudentDashboard(Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/student/Student.fxml"));
-            Parent root = loader.load();
-
+            Scene scene = new Scene(loader.load());
             StudentController controller = loader.getController();
-            App.getInstance().registerController(controller);
-
-            Scene scene = new Scene(root);
-
-            String userNickname = UserSession.getInstance().getNickname();
-            stage.setTitle(userNickname + "'s Dashboard");
-
-            stage.setOnCloseRequest(event -> {
-                handleWindowClose(event, controller);
-                App.getInstance().unregisterController(controller);
-            });
-
+            stage.setOnCloseRequest(event -> handleWindowClose(event, controller));
             stage.setScene(scene);
-            stage.show();
-
+            stage.setTitle("Student Dashboard");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,7 +84,6 @@ public class ViewFactory {
                 if (controller != null) {
                     controller.cleanup();
                 }
-                UserSession.getInstance().endSession();
                 showLoginScreen(stage);
             }
         });
@@ -123,11 +101,9 @@ public class ViewFactory {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Call cleanup before ending session
                 if (controller != null) {
                     controller.cleanup();
                 }
-                UserSession.getInstance().endSession();
                 showLoginScreen(stage);
             }
         });
@@ -144,10 +120,7 @@ public class ViewFactory {
             Scene scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.setTitle("Study Helper App Login");
-
-            // Add proper window close handling for login screen
             stage.setOnCloseRequest(event -> handleLoginWindowClose(event));
-
             System.out.println("Login screen loaded successfully");
         } catch (Exception e) {
             System.err.println("Error loading login screen: " + e.getMessage());
@@ -174,6 +147,37 @@ public class ViewFactory {
             stage.setOnCloseRequest(null);
             stage.setScene(scene);
             stage.setTitle("Delete Account");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // New method for showing exam screen
+    public void showExamScreen(int examId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ExamView.fxml"));
+
+            // Set the controller with examId
+            loader.setController(new ExamController(examId));
+
+            Scene scene = new Scene(loader.load());
+            Stage stage = new Stage();
+            stage.setTitle("Exam");
+            stage.setScene(scene);
+
+            // Make it full screen or set specific size
+            stage.setMaximized(true);
+
+            // Prevent closing with X button during exam
+            stage.setOnCloseRequest(event -> {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText("Exam in Progress");
+                alert.setContentText("Please complete and submit the exam properly.");
+                event.consume();
+            });
+
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }

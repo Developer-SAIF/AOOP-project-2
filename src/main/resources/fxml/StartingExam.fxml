@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.aoopproject.controllers.student.ExamStartController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <!-- A label to display which exam is upcoming or selected -->
+        <Label fx:id="examLabel" layoutX="40" layoutY="40" text="Exam Title" style="-fx-font-size: 18px;" />
+
+        <!-- A label to show the countdown or status of the exam (e.g. X days left, or exam is open) -->
+        <Label fx:id="countdownLabel" layoutX="40" layoutY="100" text="Exam starts in X days, Y hours" style="-fx-font-size: 14px;" />
+
+        <!-- The 'Enter Exam' button is disabled until the countdown reaches 0 and the exam is officially open -->
+        <Button fx:id="enterExamButton" layoutX="40" layoutY="180" text="Enter Exam" disable="true" />
+    </children>
+</AnchorPane>
