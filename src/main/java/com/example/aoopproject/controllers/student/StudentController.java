@@ -9,16 +9,14 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONArray;
@@ -70,6 +68,8 @@ public class StudentController implements Initializable {
     @FXML
     public Tab notificationsTab;
     public Tab aiTab;
+    public AnchorPane participateExamAnchorPane;
+
 
     @FXML
     private DatePicker examCalendar;
@@ -103,6 +103,9 @@ public class StudentController implements Initializable {
 
             //initialize Calendar View
             initializeCalenderView();
+
+            //initialize participate tab;
+            loadExamStartToTab();
 
         } catch (Exception e) {
             System.err.println("Error during initialization: " + e.getMessage());
@@ -1150,6 +1153,40 @@ public class StudentController implements Initializable {
     private ObservableList<String> getAchievements() {
         // Implementation remains the same
         return FXCollections.observableArrayList();
+    }
+
+    // Method to load the ExamStart FXML into the Participate Exam tab
+    public void loadExamStartToTab() {
+        try {
+            // Get the first upcoming exam ID (or you can modify this logic based on your needs)
+            int examId = ExamManager.getInstance().getUpcomingExams()
+                    .stream()
+                    .findFirst()
+                    .map(ExamManager.ExamInfo::getExamId)
+                    .orElse(-1);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StartingExam.fxml"));
+            AnchorPane examStartPane = loader.load();
+
+            ExamStartController controller = loader.getController();
+            controller.initializeExam(examId);
+
+            participateExamAnchorPane.getChildren().setAll(examStartPane);
+
+            // Set anchor constraints
+            AnchorPane.setTopAnchor(examStartPane, 0.0);
+            AnchorPane.setBottomAnchor(examStartPane, 0.0);
+            AnchorPane.setLeftAnchor(examStartPane, 0.0);
+            AnchorPane.setRightAnchor(examStartPane, 0.0);
+
+            if (examId == -1) {
+                // Handle case when no exam is available
+                System.out.println("No upcoming exams found");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading exam start view: " + e.getMessage());
+        }
     }
 
     // ExamController ends here
