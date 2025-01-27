@@ -13,6 +13,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
         instance = this; // Set instance in start method
         ViewFactory.getInstance().showLoginScreen(primaryStage);
         primaryStage.show();

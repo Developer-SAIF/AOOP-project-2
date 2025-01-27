@@ -50,6 +50,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -92,36 +94,44 @@ public class StudentController implements Initializable {
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Create a list to hold all initialization tasks
+        List<CompletableFuture<Void>> initTasks = new ArrayList<>();
+
         try {
-            // Initialize all exam-related components first
-            initializeExamComponents();
+            // Convert initialization methods to CompletableFuture tasks
+            initTasks.add(CompletableFuture.runAsync(this::initializeExamComponents));
+            initTasks.add(CompletableFuture.runAsync(this::initializeJournalComponents));
+            initTasks.add(CompletableFuture.runAsync(this::initializeNoticeComponents));
+            initTasks.add(CompletableFuture.runAsync(this::initializeMessaging));
+            initTasks.add(CompletableFuture.runAsync(this::initializeFileSharingComponents));
+            initTasks.add(CompletableFuture.runAsync(this::initializeAiHelper));
+            initTasks.add(CompletableFuture.runAsync(this::initializeCalenderView));
+            initTasks.add(CompletableFuture.runAsync(this::loadExamStartToTab));
+            initTasks.add(CompletableFuture.runAsync(this::fileinitialize));
 
-            // Journal initialization
-            initializeJournalComponents();
+            // Wait for all tasks to complete
+            CompletableFuture<Void> allOf = CompletableFuture.allOf(
+                    initTasks.toArray(new CompletableFuture[0])
+            );
 
-            // Notice initialization
-            initializeNoticeComponents();
-
-            // Message initialization
-            initializeMessaging();
-
-            // File sharing initialization
-            initializeFileSharingComponents();
-
-            // AI helper initialization
-            initializeAiHelper();
-
-//            //initialize Calendar View
-//            initializeCalenderView();
-
-            //initialize participate tab;
-            loadExamStartToTab();
-
-            // file initialize
-            fileinitialize();
+            // Add timeout and exception handling
+            allOf.orTimeout(30, TimeUnit.SECONDS)
+                    .whenComplete((result, throwable) -> {
+                        if (throwable != null) {
+                            Platform.runLater(() -> {
+                                System.err.println("Initialization error: " + throwable.getMessage());
+                                // Handle the error appropriately
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                System.out.println("All initializers have completed successfully");
+                                // Perform any post-initialization tasks
+                            });
+                        }
+                    }).join();
 
         } catch (Exception e) {
-            System.err.println("Error during initialization: " + e.getMessage());
+            System.err.println("Critical initialization error: " + e.getMessage());
             e.printStackTrace();
         }
     }
